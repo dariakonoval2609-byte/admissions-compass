@@ -1,397 +1,847 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admissions Compass | Cleverly UA</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Admissions Compass | Cleverly UA</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root {
-  --brand: #CD5C5C;
-  --brand-dark: #ad4545;
-  --bg: #f7f7f8;
-  --text: #262626;
-  --muted: #707070;
-  --border: #e7e7e9;
-  --white: #ffffff;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: 'Montserrat', Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 5%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-.logo { display: flex; align-items: center; gap: 12px; }
-.logo-mark {
-  width: 64px;
-  height: 64px;
-  background: transparent;
-  border-radius: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-.logo-mark {
-  width: 64px;
-  height: 64px;
-  background: transparent;
-  border-radius: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
+  <style>
+    :root {
+      --brand: #CD5C5C;
+      --brand-light: #fff0f0;
+      --text: #202124;
+      --muted: #777b84;
+      --background: #f7f7f9;
+      --border: #e5e5e9;
+      --white: #ffffff;
+    }
 
-.logo-mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-}
-.logo h1 { font-size: 19px; margin: 0 0 4px; }
-.logo p { font-size: 12px; color: var(--muted); margin: 0; }
-.badge {
-  padding: 8px 12px;
-  border-radius: 20px;
-  background: #fff0f0;
-  color: var(--brand-dark);
-  font-size: 13px;
-}
-main { max-width: 1250px; margin: 32px auto; padding: 0 20px; }
-.intro { margin-bottom: 28px; }
-.intro h2 { font-size: 29px; margin: 0 0 10px; }
-.intro p { color: var(--muted); line-height: 1.6; margin: 0; }
-.toolbar {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-input, select {
-  width: 100%; padding: 13px 14px;
-  border: 1px solid var(--border);
-  background: white; border-radius: 9px;
-  font-size: 14px; color: var(--text);
-}
-.stats {
-  display: flex; gap: 12px; flex-wrap: wrap;
-  margin: 20px 0;
-}
-.stat {
-  background: white; border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px 18px;
-  min-width: 150px;
-}
-.stat strong { display: block; font-size: 23px; margin-bottom: 5px; }
-.stat span { font-size: 12px; color: var(--muted); }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 17px;
-}
-.card {
-  background: white; border: 1px solid var(--border);
-  border-radius: 13px; padding: 20px;
-  display: flex; flex-direction: column; gap: 12px;
-  transition: box-shadow .2s, transform .2s;
-}
-.card:hover { box-shadow: 0 7px 24px #0000000b; transform: translateY(-2px); }
-.card-top { display: flex; justify-content: space-between; gap: 8px; }
-.tag {
-  font-size: 11px; padding: 6px 9px;
-  background: #f4f4f5; border-radius: 20px;
-  color: #555; height: fit-content;
-}
-.card h3 { margin: 0; font-size: 18px; line-height: 1.4; }
-.university { color: var(--brand-dark); font-size: 13px; font-weight: bold; }
-.details { font-size: 13px; color: var(--muted); line-height: 1.7; }
-.card button, .back, .primary {
-  border: 0; background: var(--brand); color: white;
-  border-radius: 8px; padding: 12px 15px;
-  cursor: pointer; font-size: 13px; font-weight: bold;
-}
-.card button { margin-top: auto; }
-button:hover { filter: brightness(.95); }
-.empty {
-  background: white; padding: 45px 20px;
-  text-align: center; border: 1px solid var(--border);
-  border-radius: 12px; color: var(--muted);
-}
-.hidden { display: none !important; }
-#detail {
-  background: white; border: 1px solid var(--border);
-  border-radius: 14px; padding: 28px;
-}
-.back { background: #f4f4f5; color: #333; margin-bottom: 22px; }
-.detail-heading h2 { font-size: 27px; line-height: 1.4; }
-.detail-heading p { color: var(--brand-dark); }
-.detail-grid {
-  display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 16px; margin-top: 25px;
-}
-.detail-section {
-  border: 1px solid var(--border); border-radius: 10px;
-  padding: 18px; overflow-wrap: anywhere;
-}
-.detail-section h3 { font-size: 15px; margin-top: 0; }
-.detail-section p { color: #555; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
-footer {
-  padding: 25px; text-align: center;
-  color: var(--muted); font-size: 12px;
-}
-@media (max-width: 900px) {
-  .grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .toolbar { grid-template-columns: 1fr 1fr; }
-  .toolbar input { grid-column: 1 / -1; }
-}
-@media (max-width: 580px) {
-  header { padding: 15px; }
-  .badge { display: none; }
-  main { margin-top: 22px; padding: 0 13px; }
-  .intro h2 { font-size: 24px; }
-  .grid, .detail-grid, .toolbar { grid-template-columns: 1fr; }
-  .toolbar input { grid-column: auto; }
-  #detail { padding: 17px; }
-}
-</style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--background);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 6%;
+    }
+
+    .header-inner {
+      max-width: 1500px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .badge {
+      padding: 12px 18px;
+      border-radius: 30px;
+      background: var(--brand-light);
+      color: var(--brand);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 38px 6% 70px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .section-description {
+      margin: 0 0 34px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-width: 0;
+      padding: 17px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--white);
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--brand);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat {
+      min-width: 180px;
+      padding: 18px 22px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--white);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      padding: 18px 0;
+      line-height: 1.7;
+    }
+
+    .status.error {
+      color: #a83232;
+    }
+
+    .program-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--white);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-label {
+      align-self: flex-start;
+      padding: 7px 10px;
+      border-radius: 20px;
+      background: var(--brand-light);
+      color: var(--brand);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .card h3 {
+      margin: 18px 0 10px;
+      font-size: 19px;
+      line-height: 1.5;
+    }
+
+    .card-program {
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .card-info {
+      margin: 7px 0;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .card-info b {
+      font-weight: 600;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 22px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 11px 14px;
+      border: 1px solid var(--brand);
+      border-radius: 9px;
+      background: var(--brand);
+      color: white;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      background: white;
+      color: var(--brand);
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 35px;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      background: white;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    footer {
+      padding: 28px 6%;
+      background: white;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 720px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      border-radius: 16px;
+      background: white;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .modal-header h2 {
+      margin-top: 0;
+      line-height: 1.5;
+    }
+
+    .close {
+      border: none;
+      background: transparent;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .detail-row {
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-row strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 1000px) {
+      .program-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filters input {
+        grid-column: 1 / -1;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      header {
+        padding: 22px 5%;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand {
+        gap: 14px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .logo {
+        width: 38px;
+        height: 48px;
+      }
+
+      main {
+        padding: 28px 5% 50px;
+      }
+
+      .section-title {
+        font-size: 25px;
+      }
+
+      .filters,
+      .program-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filters input {
+        grid-column: auto;
+      }
+
+      .stat {
+        flex: 1;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header>
-  <div class="logo">
-    <div class="logo-mark">
-  <img src="./logo.png.png" alt="Cleverly UA">
-</div>
-    <div>
-      <h1>Admissions Compass</h1>
-      <p>Cleverly UA · Навігатор вступу</p>
-    </div>
-  </div>
-  <div class="badge">Внутрішній робочий інструмент</div>
-</header>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <img class="logo" src="./logo.png.png" alt="Cleverly UA"
+             onerror="this.style.display='none'">
 
-<main>
-  <section id="catalog">
-    <div class="intro">
-      <h2>Каталог освітніх програм</h2>
-      <p>Єдиний простір для пошуку університетів, програм та вимог до вступу.</p>
-    </div>
+        <div>
+          <h1>Admissions Compass</h1>
+          <div class="subtitle">Cleverly UA · Навігатор вступу</div>
+        </div>
+      </div>
 
-    <div class="toolbar">
-      <input id="search" type="search" placeholder="Пошук за університетом або спеціальністю...">
-      <select id="universityFilter">
+      <div class="badge">Внутрішній робочий інструмент</div>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="section-title">Каталог освітніх програм</h2>
+
+    <p class="section-description">
+      Єдиний простір для пошуку університетів, програм та вимог до вступу.
+    </p>
+
+    <div class="filters">
+      <input
+        id="search"
+        type="search"
+        placeholder="Пошук за університетом або спеціальністю..."
+        aria-label="Пошук"
+      >
+
+      <select id="universityFilter" aria-label="Фільтр за університетом">
         <option value="">Усі університети</option>
       </select>
-      <select id="cityFilter">
+
+      <select id="cityFilter" aria-label="Фільтр за містом">
         <option value="">Усі міста</option>
       </select>
     </div>
 
     <div class="stats">
-      <div class="stat"><strong id="count">0</strong><span>Програм у каталозі</span></div>
-      <div class="stat"><strong>Бельгія</strong><span>Країна навчання</span></div>
-    </div>
-
-    <div id="programGrid" class="grid"></div>
-    <div id="empty" class="empty hidden">Нічого не знайдено. Зміни параметри пошуку.</div>
-  </section>
-
-  <section id="detailView" class="hidden">
-    <button class="back" onclick="showCatalog()">← Назад до каталогу</button>
-    <div id="detail"></div>
-  </section>
-</main>
-
-<footer>
-  Cleverly UA · Admissions Compass · Навчальна інформація потребує перевірки за офіційними джерелами.
-</footer>
-
-<script>
-let programs = [];
-
-  const $ = id => document.getElementById(id);
-
-function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let quoted = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    const next = text[i + 1];
-
-    if (ch === '"' && quoted && next === '"') {
-      cell += '"';
-      i++;
-    } else if (ch === '"') {
-      quoted = !quoted;
-    } else if (ch === "," && !quoted) {
-      row.push(cell);
-      cell = "";
-    } else if ((ch === "\n" || ch === "\r") && !quoted) {
-      if (ch === "\r" && next === "\n") i++;
-      row.push(cell);
-      if (row.some(value => value.trim() !== "")) rows.push(row);
-      row = [];
-      cell = "";
-    } else {
-      cell += ch;
-    }
-  }
-
-  row.push(cell);
-  if (row.some(value => value.trim() !== "")) rows.push(row);
-
-  const headers = rows.shift().map(h => h.trim());
-
-  return rows.map(values => {
-    const item = {};
-    headers.forEach((header, i) => {
-      item[header] = (values[i] || "").trim();
-    });
-    return item;
-  });
-}
-
-async function loadPrograms() {
-  const fileName = "Оформлення навігатор - Бельгія ВО .csv";
-
-  try {
-    const response = await fetch("./admissions.csv");
-    if (!response.ok) throw new Error("Не вдалося завантажити CSV");
-
-    const rows = parseCSV(await response.text());
-
-    programs = rows
-      .filter(row => row["Університет"] && row["Програма"])
-      .map(row => ({
-        university: row["Університет"],
-        program: row["Програма"],
-        city: row["Місто"],
-        language: row["Мова"],
-        tuition: [
-          row["Вартість"] ? "Загальна вартість: " + row["Вартість"] : "",
-          row["Для українців"] ? "Для українців: " + row["Для українців"] : ""
-        ].filter(Boolean).join("\n"),
-        deadline: row["Дедлайн"],
-        requirements: row["Вимоги"],
-        documents: row["Необхідні документи"],
-        certification: row["Вимоги засвідчення документів "],
-        source: row["Посилання"],
-        notes: [
-          row["Тип вишу"] ? "Тип закладу: " + row["Тип вишу"] : "",
-          row["Комісія за розгляд заявки"]
-            ? "Комісія за розгляд заявки: " + row["Комісія за розгляд заявки"]
-            : ""
-        ].filter(Boolean).join("\n")
-      }));
-
-    initFilters();
-    render();
-  } catch (error) {
-    console.error(error);
-    $("programGrid").innerHTML =
-      "<p>Не вдалося завантажити каталог. Перевірте доступність CSV-файлу.</p>";
-    $("count").textContent = "0";
-  }
-}
-
-
-function initFilters() {
-  const universities = [...new Set(programs.map(p => p.university).filter(Boolean))].sort();
-  const cities = [...new Set(programs.map(p => p.city).filter(Boolean))].sort();
-  universities.forEach(v => $("universityFilter").add(new Option(v, v)));
-  cities.forEach(v => $("cityFilter").add(new Option(v, v)));
-}
-
-function render() {
-  const query = $("search").value.trim().toLowerCase();
-  const uni = $("universityFilter").value;
-  const city = $("cityFilter").value;
-
-  const filtered = programs.map((p, i) => ({...p, _index:i})).filter(p => {
-    const text = [p.university, p.program, p.city, p.language].join(" ").toLowerCase();
-    return text.includes(query) && (!uni || p.university === uni) && (!city || p.city === city);
-  });
-
-  $("count").textContent = filtered.length;
-  $("programGrid").innerHTML = filtered.map(p => `
-    <article class="card">
-      <div class="card-top"><span class="tag">${safe(p.city || "Місто не вказано")}</span><span class="tag">${safe(p.language || "Мова не вказана")}</span></div>
-      <div class="university">${safe(p.university)}</div>
-      <h3>${safe(p.program)}</h3>
-      <div class="details">
-        <div><b>Вартість:</b> ${safe(p.tuition || "Не вказано")}</div>
-        <div><b>Дедлайн:</b> ${safe(p.deadline || "Не вказано")}</div>
+      <div class="stat">
+        <strong id="count">0</strong>
+        <span>Програм у каталозі</span>
       </div>
-      <button onclick="showDetail(${p._index})">Переглянути програму →</button>
-    </article>
-  `).join("");
 
-  $("empty").classList.toggle("hidden", filtered.length > 0);
-}
-
-function showDetail(index) {
-  const p = programs[index];
-  $("catalog").classList.add("hidden");
-  $("detailView").classList.remove("hidden");
-
-  const fields = [
-    ["Вартість навчання", p.tuition],
-    ["Мова навчання", p.language],
-    ["Дедлайни", p.deadline],
-    ["Вимоги до вступу", p.requirements],
-    ["Необхідні документи", p.documents],
-    ["Вимоги до засвідчення документів", p.certification],
-    ["Примітки менеджера", p.notes]
-  ];
-
-  $("detail").innerHTML = `
-    <div class="detail-heading">
-      <p>${safe(p.university)} · ${safe(p.city)}</p>
-      <h2>${safe(p.program)}</h2>
+      <div class="stat">
+        <strong>Бельгія</strong>
+        <span>Країна навчання</span>
+      </div>
     </div>
-    <div class="detail-grid">
-      ${fields.map(([title, value]) => `
-        <section class="detail-section">
-          <h3>${safe(title)}</h3>
-          <p>${safe(value || "Інформація не внесена")}</p>
-        </section>
-      `).join("")}
-      <section class="detail-section">
-        <h3>Офіційне джерело</h3>
-        <p>${p.source ? `<a href="${safe(p.source)}" target="_blank" rel="noopener noreferrer">Відкрити джерело →</a>` : "Посилання не додано"}</p>
-      </section>
+
+    <div id="status" class="status" role="status">
+      Завантажуємо каталог...
     </div>
-  `;
-  window.scrollTo({top:0, behavior:"smooth"});
-}
 
-function showCatalog() {
-  $("detailView").classList.add("hidden");
-  $("catalog").classList.remove("hidden");
-  window.scrollTo({top:0, behavior:"smooth"});
-}
+    <div id="programGrid" class="program-grid"></div>
+  </main>
 
-$("search").addEventListener("input", render);
-$("universityFilter").addEventListener("change", render);
-$("cityFilter").addEventListener("change", render);
-loadPrograms();
-</script>
+  <footer>
+    Cleverly UA · Admissions Compass · Навчальна інформація потребує
+    перевірки за офіційними джерелами.
+  </footer>
+
+  <div id="detailModal" class="modal" role="dialog" aria-modal="true"
+       aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Інформація про програму</h2>
+        <button class="close" id="closeModal" aria-label="Закрити">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    let programs = [];
+
+    const $ = id => document.getElementById(id);
+
+    /*
+      Читаємо CSV з підтримкою:
+      - UTF-8;
+      - полів у лапках;
+      - ком і переносів рядків усередині полів;
+      - BOM на початку файлу.
+    */
+    function parseCSV(text) {
+      text = text.replace(/^\uFEFF/, "");
+
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === "," && !inQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") {
+            i++;
+          }
+
+          row.push(cell);
+
+          if (row.some(value => value.trim() !== "")) {
+            rows.push(row);
+          }
+
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell !== "" || row.length > 0) {
+        row.push(cell);
+
+        if (row.some(value => value.trim() !== "")) {
+          rows.push(row);
+        }
+      }
+
+      if (rows.length === 0) {
+        return [];
+      }
+
+      const headers = rows.shift().map(header =>
+        header.trim().replace(/^\uFEFF/, "")
+      );
+
+      return rows.map(values => {
+        const item = {};
+
+        headers.forEach((header, index) => {
+          item[header] = (values[index] || "").trim();
+        });
+
+        return item;
+      });
+    }
+
+    function getValue(row, possibleNames) {
+      const normalized = {};
+
+      Object.keys(row).forEach(key => {
+        normalized[key.trim().toLowerCase()] = row[key];
+      });
+
+      for (const name of possibleNames) {
+        const value = normalized[name.trim().toLowerCase()];
+
+        if (value && value.trim() !== "") {
+          return value.trim();
+        }
+      }
+
+      return "";
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function getProgram(row) {
+      return {
+        university: getValue(row, ["Університет", "University"]),
+        city: getValue(row, ["Місто", "City"]),
+        country: getValue(row, ["Країна", "Country"]),
+        program: getValue(row, [
+          "Програма",
+          "Назва програми",
+          "Спеціальність",
+          "Підкластер (EN)",
+          "Підкластер",
+          "Вкладка"
+        ]),
+        category: getValue(row, ["Вкладка", "Тип вишу"]),
+        institutionType: getValue(row, ["Тип вишу"]),
+        partner: getValue(row, ["Партнер"]),
+        language: getValue(row, ["Мова", "Мова навчання"]),
+        tuition: getValue(row, ["Вартість", "Вартість навчання"]),
+        deadline: getValue(row, ["Дедлайн", "Кінцевий термін подачі"]),
+        requirements: getValue(row, ["Вимоги", "Вимоги до вступу"]),
+        documents: getValue(row, ["Необхідні документи"]),
+        certification: getValue(row, [
+          "Вимоги засвідчення документів",
+          "Вимоги засвідчення документів "
+        ]),
+        commission: getValue(row, ["Комісія за розгляд заявки"]),
+        source: getValue(row, ["Посилання", "Посилання на програму"]),
+        flag: getValue(row, ["Прапор"]),
+        raw: row
+      };
+    }
+
+    async function loadPrograms() {
+      $("status").className = "status";
+      $("status").textContent = "Завантажуємо каталог...";
+
+      try {
+        const response = await fetch("./admissions.csv", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            "CSV не знайдено. Код відповіді: " + response.status
+          );
+        }
+
+        const csvText = await response.text();
+        const rows = parseCSV(csvText);
+
+        if (rows.length === 0) {
+          throw new Error("CSV-файл порожній або не вдалося прочитати його заголовки.");
+        }
+
+        programs = rows
+          .map(getProgram)
+          .filter(program => program.university || program.program);
+
+        if (programs.length === 0) {
+          throw new Error(
+            "Файл прочитано, але не знайдено стовпців «Університет» або «Підкластер»."
+          );
+        }
+
+        initFilters();
+        render();
+
+        $("status").textContent = "";
+        $("status").className = "status";
+      } catch (error) {
+        console.error("Помилка завантаження каталогу:", error);
+
+        $("count").textContent = "0";
+        $("status").className = "status error";
+        $("status").textContent =
+          "Не вдалося завантажити каталог. " + error.message;
+
+        $("programGrid").innerHTML = `
+          <div class="empty">
+            Перевір, чи файл <b>admissions.csv</b> лежить у корені репозиторію
+            поруч з index.html.
+            <br><br>
+            Після виправлення онови сторінку клавішами Ctrl + F5.
+          </div>
+        `;
+      }
+    }
+
+    function initFilters() {
+      const universities = [...new Set(
+        programs.map(program => program.university).filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "uk"));
+
+      const cities = [...new Set(
+        programs.map(program => program.city).filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "uk"));
+
+      $("universityFilter").innerHTML =
+        '<option value="">Усі університети</option>' +
+        universities.map(name =>
+          `<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`
+        ).join("");
+
+      $("cityFilter").innerHTML =
+        '<option value="">Усі міста</option>' +
+        cities.map(city =>
+          `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`
+        ).join("");
+    }
+
+    function render() {
+      const search = $("search").value.trim().toLowerCase();
+      const selectedUniversity = $("universityFilter").value;
+      const selectedCity = $("cityFilter").value;
+
+      const filtered = programs.filter(program => {
+        const searchable = [
+          program.university,
+          program.program,
+          program.city,
+          program.country,
+          program.category,
+          program.institutionType,
+          program.partner
+        ].join(" ").toLowerCase();
+
+        return (
+          (!search || searchable.includes(search)) &&
+          (!selectedUniversity ||
+            program.university === selectedUniversity) &&
+          (!selectedCity || program.city === selectedCity)
+        );
+      });
+
+      $("count").textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        $("programGrid").innerHTML = `
+          <div class="empty">
+            Нічого не знайдено.<br>
+            Спробуй змінити пошуковий запит або фільтри.
+          </div>
+        `;
+        return;
+      }
+
+      $("programGrid").innerHTML = filtered.map((program, index) => `
+        <article class="card">
+          <span class="card-label">
+            ${escapeHTML(program.city || "Бельгія")}
+          </span>
+
+          <h3>${escapeHTML(program.university || "Університет")}</h3>
+
+          <div class="card-program">
+            ${escapeHTML(program.program || "Освітня програма не вказана")}
+          </div>
+
+          ${program.institutionType ? `
+            <div class="card-info">
+              <b>Тип закладу:</b> ${escapeHTML(program.institutionType)}
+            </div>` : ""}
+
+          ${program.language ? `
+            <div class="card-info">
+              <b>Мова навчання:</b> ${escapeHTML(program.language)}
+            </div>` : ""}
+
+          ${program.tuition ? `
+            <div class="card-info">
+              <b>Вартість:</b> ${escapeHTML(program.tuition)}
+            </div>` : ""}
+
+          ${program.deadline ? `
+            <div class="card-info">
+              <b>Дедлайн:</b> ${escapeHTML(program.deadline)}
+            </div>` : ""}
+
+          <div class="card-actions">
+            <button class="button" data-details="${index}">
+              Детальніше
+            </button>
+
+            ${program.source ? `
+              <a class="button secondary"
+                 href="${escapeHTML(program.source)}"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                Джерело
+              </a>` : ""}
+          </div>
+        </article>
+      `).join("");
+
+      $("programGrid").querySelectorAll("[data-details]").forEach(button => {
+        button.addEventListener("click", () => {
+          showDetails(filtered[Number(button.dataset.details)]);
+        });
+      });
+    }
+
+    function showDetails(program) {
+      $("modalTitle").textContent =
+        program.university || "Інформація про програму";
+
+      const fields = [
+        ["Програма / спеціальність", program.program],
+        ["Місто", program.city],
+        ["Країна", program.country],
+        ["Тип закладу", program.institutionType],
+        ["Категорія", program.category],
+        ["Партнер", program.partner],
+        ["Мова навчання", program.language],
+        ["Вартість навчання", program.tuition],
+        ["Дедлайн", program.deadline],
+        ["Вимоги до вступу", program.requirements],
+        ["Необхідні документи", program.documents],
+        ["Засвідчення документів", program.certification],
+        ["Комісія за розгляд заявки", program.commission]
+      ];
+
+      let html = fields
+        .filter(([label, value]) => value)
+        .map(([label, value]) => `
+          <div class="detail-row">
+            <strong>${escapeHTML(label)}</strong>
+            <div>${escapeHTML(value).replace(/\n/g, "<br>")}</div>
+          </div>
+        `).join("");
+
+      if (program.source) {
+        html += `
+          <div class="detail-row">
+            <strong>Офіційне посилання / джерело з таблиці</strong>
+            <a href="${escapeHTML(program.source)}"
+               target="_blank"
+               rel="noopener noreferrer">
+              Відкрити джерело
+            </a>
+          </div>
+        `;
+      }
+
+      if (!html) {
+        html = "<p>У таблиці немає додаткової інформації для цього запису.</p>";
+      }
+
+      $("modalBody").innerHTML = html;
+      $("detailModal").classList.add("open");
+    }
+
+    $("search").addEventListener("input", render);
+    $("universityFilter").addEventListener("change", render);
+    $("cityFilter").addEventListener("change", render);
+
+    $("closeModal").addEventListener("click", () => {
+      $("detailModal").classList.remove("open");
+    });
+
+    $("detailModal").addEventListener("click", event => {
+      if (event.target === $("detailModal")) {
+        $("detailModal").classList.remove("open");
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        $("detailModal").classList.remove("open");
+      }
+    });
+
+    loadPrograms();
+  </script>
 </body>
 </html>
