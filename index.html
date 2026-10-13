@@ -309,7 +309,7 @@ async function loadPrograms() {
   }
 }
 
-
+const $ = id => document.getElementById(id);
 
 function initFilters() {
   const universities = [...new Set(programs.map(p => p.university).filter(Boolean))].sort();
