@@ -32,6 +32,22 @@ header {
 }
 .logo { display: flex; align-items: center; gap: 12px; }
 .logo-mark {
+  width: 64px;
+  height: 64px;
+  background: transparent;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+} {
   width: 42px; height: 42px;
   border-radius: 12px;
   background: var(--brand);
@@ -149,7 +165,9 @@ footer {
 <body>
 <header>
   <div class="logo">
-    <div class="logo-mark">C</div>
+    <div class="logo-mark">
+  <img src="./logo.png.png" alt="Cleverly UA">
+</div>
     <div>
       <h1>Admissions Compass</h1>
       <p>Cleverly UA · Навігатор вступу</p>
