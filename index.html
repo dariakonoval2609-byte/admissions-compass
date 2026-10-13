@@ -221,57 +221,95 @@ footer {
 </footer>
 
 <script>
-/*
-  ДЕМОНСТРАЦІЙНІ ДАНІ.
-  Замінити реальними записами з Excel перед робочим використанням.
-  Не використовувати цей список як підтвердження умов вступу.
-*/
-const programs = [
-  {
-    university: "Приклад університету",
-    program: "International Business Management",
-    city: "Мехелен",
-    language: "Англійська",
-    tuition: "Потрібно уточнити",
-    deadline: "Потрібно уточнити",
-    requirements: "Додати вимоги з офіційного джерела.",
-    documents: "Додати перелік документів з Excel.",
-    certification: "Потрібно уточнити",
-    source: "",
-    notes: ""
-  },
-  {
-    university: "Приклад університету",
-    program: "Business and Marketing",
-    city: "Антверпен",
-    language: "Англійська",
-    tuition: "Потрібно уточнити",
-    deadline: "Потрібно уточнити",
-    requirements: "Додати вимоги з офіційного джерела.",
-    documents: "Додати перелік документів з Excel.",
-    certification: "Потрібно уточнити",
-    source: "",
-    notes: ""
-  },
-  {
-    university: "Приклад університету",
-    program: "Applied Computer Science",
-    city: "Гент",
-    language: "Потрібно уточнити",
-    tuition: "Потрібно уточнити",
-    deadline: "Потрібно уточнити",
-    requirements: "Додати вимоги з офіційного джерела.",
-    documents: "Додати перелік документів з Excel.",
-    certification: "Потрібно уточнити",
-    source: "",
-    notes: ""
-  }
-];
+let programs = [];
 
-const $ = id => document.getElementById(id);
-const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
-  "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-}[ch]));
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (ch === '"' && quoted && next === '"') {
+      cell += '"';
+      i++;
+    } else if (ch === '"') {
+      quoted = !quoted;
+    } else if (ch === "," && !quoted) {
+      row.push(cell);
+      cell = "";
+    } else if ((ch === "\n" || ch === "\r") && !quoted) {
+      if (ch === "\r" && next === "\n") i++;
+      row.push(cell);
+      if (row.some(value => value.trim() !== "")) rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += ch;
+    }
+  }
+
+  row.push(cell);
+  if (row.some(value => value.trim() !== "")) rows.push(row);
+
+  const headers = rows.shift().map(h => h.trim());
+
+  return rows.map(values => {
+    const item = {};
+    headers.forEach((header, i) => {
+      item[header] = (values[i] || "").trim();
+    });
+    return item;
+  });
+}
+
+async function loadPrograms() {
+  const fileName = "Оформлення навігатор - Бельгія ВО .csv";
+
+  try {
+    const response = await fetch("./" + encodeURI(fileName));
+    if (!response.ok) throw new Error("Не вдалося завантажити CSV");
+
+    const rows = parseCSV(await response.text());
+
+    programs = rows
+      .filter(row => row["Університет"] && row["Програма"])
+      .map(row => ({
+        university: row["Університет"],
+        program: row["Програма"],
+        city: row["Місто"],
+        language: row["Мова"],
+        tuition: [
+          row["Вартість"] ? "Загальна вартість: " + row["Вартість"] : "",
+          row["Для українців"] ? "Для українців: " + row["Для українців"] : ""
+        ].filter(Boolean).join("\n"),
+        deadline: row["Дедлайн"],
+        requirements: row["Вимоги"],
+        documents: row["Необхідні документи"],
+        certification: row["Вимоги засвідчення документів "],
+        source: row["Посилання"],
+        notes: [
+          row["Тип вишу"] ? "Тип закладу: " + row["Тип вишу"] : "",
+          row["Комісія за розгляд заявки"]
+            ? "Комісія за розгляд заявки: " + row["Комісія за розгляд заявки"]
+            : ""
+        ].filter(Boolean).join("\n")
+      }));
+
+    initFilters();
+    render();
+  } catch (error) {
+    console.error(error);
+    $("programGrid").innerHTML =
+      "<p>Не вдалося завантажити каталог. Перевірте доступність CSV-файлу.</p>";
+    $("count").textContent = "0";
+  }
+}
+
+
 
 function initFilters() {
   const universities = [...new Set(programs.map(p => p.university).filter(Boolean))].sort();
@@ -352,8 +390,7 @@ function showCatalog() {
 $("search").addEventListener("input", render);
 $("universityFilter").addEventListener("change", render);
 $("cityFilter").addEventListener("change", render);
-initFilters();
-render();
+loadPrograms();
 </script>
 </body>
 </html>
