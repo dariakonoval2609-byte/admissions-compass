@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admissions Compass | Cleverly UA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --brand: #CD5C5C;
@@ -17,7 +20,7 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Montserrat', Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -42,18 +45,23 @@ header {
   flex-shrink: 0;
 }
 
+.logo-mark {
+  width: 64px;
+  height: 64px;
+  background: transparent;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .logo-mark img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
-} {
-  width: 42px; height: 42px;
-  border-radius: 12px;
-  background: var(--brand);
-  color: white;
-  display: grid; place-items: center;
-  font-weight: bold; font-size: 20px;
+}
 }
 .logo h1 { font-size: 19px; margin: 0 0 4px; }
 .logo p { font-size: 12px; color: var(--muted); margin: 0; }
@@ -349,206 +357,3 @@ render();
 </script>
 </body>
 </html>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-
-:root {
-  --brand: #CD5C5C;
-  --brand-dark: #A94343;
-  --bg: #F8F8FA;
-  --text: #262626;
-  --muted: #71717A;
-  --border: #E8E8EC;
-  --white: #FFFFFF;
-}
-
-body {
-  font-family: 'Montserrat', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-header {
-  padding: 22px 5%;
-  background: #FFFFFF;
-  border-bottom: 1px solid var(--border);
-}
-
-.logo h1 {
-  font-size: 21px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-main {
-  max-width: 1440px;
-  margin: 42px auto;
-  padding: 0 32px;
-}
-
-.intro {
-  margin-bottom: 32px;
-}
-
-.intro h2 {
-  font-size: clamp(28px, 3vw, 38px);
-  font-weight: 800;
-  letter-spacing: -1px;
-  margin-bottom: 12px;
-}
-
-.intro p {
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.toolbar {
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-input,
-select {
-  min-height: 52px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 14px;
-  padding: 14px 16px;
-}
-
-input:focus,
-select:focus {
-  outline: 2px solid #CD5C5C40;
-  border-color: var(--brand);
-}
-
-.stats {
-  gap: 16px;
-  margin: 24px 0 28px;
-}
-
-.stat {
-  border-radius: 12px;
-  padding: 20px 24px;
-  min-width: 180px;
-}
-
-.stat strong {
-  font-size: 28px;
-  font-weight: 800;
-}
-
-.stat span {
-  font-size: 12px;
-}
-
-.grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
-}
-
-.card {
-  border-radius: 14px;
-  padding: 24px;
-  gap: 16px;
-  transition: transform .2s, box-shadow .2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px #2525250C;
-}
-
-.card h3 {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.university {
-  font-size: 12px;
-  line-height: 1.7;
-  letter-spacing: .2px;
-}
-
-.details {
-  font-size: 13px;
-  line-height: 2;
-}
-
-.card button,
-.primary {
-  min-height: 48px;
-  border-radius: 9px;
-  font-family: inherit;
-  font-weight: 600;
-  transition: background .2s;
-}
-
-.card button:hover {
-  background: var(--brand-dark);
-}
-
-.tag {
-  border-radius: 7px;
-  padding: 7px 10px;
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-#detail {
-  border-radius: 16px;
-  padding: 36px;
-}
-
-.detail-heading h2 {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1.4;
-}
-
-.detail-section {
-  border-radius: 12px;
-  padding: 22px;
-}
-
-.detail-section h3 {
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.detail-section p {
-  font-size: 13px;
-  line-height: 1.9;
-}
-
-@media (max-width: 900px) {
-  main {
-    padding: 0 20px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 580px) {
-  main {
-    padding: 0 14px;
-    margin: 26px auto;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  #detail {
-    padding: 20px;
-  }
-
-  .detail-heading h2 {
-    font-size: 24px;
-  }
-}
