@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions Compass | Cleverly UA</title>
+<style>
+:root {
+  --brand: #CD5C5C;
+  --brand-dark: #ad4545;
+  --bg: #f7f7f8;
+  --text: #262626;
+  --muted: #707070;
+  --border: #e7e7e9;
+  --white: #ffffff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-mark {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: var(--brand);
+  color: white;
+  display: grid; place-items: center;
+  font-weight: bold; font-size: 20px;
+}
+.logo h1 { font-size: 19px; margin: 0 0 4px; }
+.logo p { font-size: 12px; color: var(--muted); margin: 0; }
+.badge {
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #fff0f0;
+  color: var(--brand-dark);
+  font-size: 13px;
+}
+main { max-width: 1250px; margin: 32px auto; padding: 0 20px; }
+.intro { margin-bottom: 28px; }
+.intro h2 { font-size: 29px; margin: 0 0 10px; }
+.intro p { color: var(--muted); line-height: 1.6; margin: 0; }
+.toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+input, select {
+  width: 100%; padding: 13px 14px;
+  border: 1px solid var(--border);
+  background: white; border-radius: 9px;
+  font-size: 14px; color: var(--text);
+}
+.stats {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin: 20px 0;
+}
+.stat {
+  background: white; border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 18px;
+  min-width: 150px;
+}
+.stat strong { display: block; font-size: 23px; margin-bottom: 5px; }
+.stat span { font-size: 12px; color: var(--muted); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+.card {
+  background: white; border: 1px solid var(--border);
+  border-radius: 13px; padding: 20px;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: box-shadow .2s, transform .2s;
+}
+.card:hover { box-shadow: 0 7px 24px #0000000b; transform: translateY(-2px); }
+.card-top { display: flex; justify-content: space-between; gap: 8px; }
+.tag {
+  font-size: 11px; padding: 6px 9px;
+  background: #f4f4f5; border-radius: 20px;
+  color: #555; height: fit-content;
+}
+.card h3 { margin: 0; font-size: 18px; line-height: 1.4; }
+.university { color: var(--brand-dark); font-size: 13px; font-weight: bold; }
+.details { font-size: 13px; color: var(--muted); line-height: 1.7; }
+.card button, .back, .primary {
+  border: 0; background: var(--brand); color: white;
+  border-radius: 8px; padding: 12px 15px;
+  cursor: pointer; font-size: 13px; font-weight: bold;
+}
+.card button { margin-top: auto; }
+button:hover { filter: brightness(.95); }
+.empty {
+  background: white; padding: 45px 20px;
+  text-align: center; border: 1px solid var(--border);
+  border-radius: 12px; color: var(--muted);
+}
+.hidden { display: none !important; }
+#detail {
+  background: white; border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px;
+}
+.back { background: #f4f4f5; color: #333; margin-bottom: 22px; }
+.detail-heading h2 { font-size: 27px; line-height: 1.4; }
+.detail-heading p { color: var(--brand-dark); }
+.detail-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px; margin-top: 25px;
+}
+.detail-section {
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px; overflow-wrap: anywhere;
+}
+.detail-section h3 { font-size: 15px; margin-top: 0; }
+.detail-section p { color: #555; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
+footer {
+  padding: 25px; text-align: center;
+  color: var(--muted); font-size: 12px;
+}
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .toolbar { grid-template-columns: 1fr 1fr; }
+  .toolbar input { grid-column: 1 / -1; }
+}
+@media (max-width: 580px) {
+  header { padding: 15px; }
+  .badge { display: none; }
+  main { margin-top: 22px; padding: 0 13px; }
+  .intro h2 { font-size: 24px; }
+  .grid, .detail-grid, .toolbar { grid-template-columns: 1fr; }
+  .toolbar input { grid-column: auto; }
+  #detail { padding: 17px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-mark">C</div>
+    <div>
+      <h1>Admissions Compass</h1>
+      <p>Cleverly UA · Навігатор вступу</p>
+    </div>
+  </div>
+  <div class="badge">Внутрішній робочий інструмент</div>
+</header>
+
+<main>
+  <section id="catalog">
+    <div class="intro">
+      <h2>Каталог освітніх програм</h2>
+      <p>Єдиний простір для пошуку університетів, програм та вимог до вступу.</p>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Пошук за університетом або спеціальністю...">
+      <select id="universityFilter">
+        <option value="">Усі університети</option>
+      </select>
+      <select id="cityFilter">
+        <option value="">Усі міста</option>
+      </select>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><strong id="count">0</strong><span>Програм у каталозі</span></div>
+      <div class="stat"><strong>Бельгія</strong><span>Країна навчання</span></div>
+    </div>
+
+    <div id="programGrid" class="grid"></div>
+    <div id="empty" class="empty hidden">Нічого не знайдено. Зміни параметри пошуку.</div>
+  </section>
+
+  <section id="detailView" class="hidden">
+    <button class="back" onclick="showCatalog()">← Назад до каталогу</button>
+    <div id="detail"></div>
+  </section>
+</main>
+
+<footer>
+  Cleverly UA · Admissions Compass · Навчальна інформація потребує перевірки за офіційними джерелами.
+</footer>
+
+<script>
+/*
+  ДЕМОНСТРАЦІЙНІ ДАНІ.
+  Замінити реальними записами з Excel перед робочим використанням.
+  Не використовувати цей список як підтвердження умов вступу.
+*/
+const programs = [
+  {
+    university: "Приклад університету",
+    program: "International Business Management",
+    city: "Мехелен",
+    language: "Англійська",
+    tuition: "Потрібно уточнити",
+    deadline: "Потрібно уточнити",
+    requirements: "Додати вимоги з офіційного джерела.",
+    documents: "Додати перелік документів з Excel.",
+    certification: "Потрібно уточнити",
+    source: "",
+    notes: ""
+  },
+  {
+    university: "Приклад університету",
+    program: "Business and Marketing",
+    city: "Антверпен",
+    language: "Англійська",
+    tuition: "Потрібно уточнити",
+    deadline: "Потрібно уточнити",
+    requirements: "Додати вимоги з офіційного джерела.",
+    documents: "Додати перелік документів з Excel.",
+    certification: "Потрібно уточнити",
+    source: "",
+    notes: ""
+  },
+  {
+    university: "Приклад університету",
+    program: "Applied Computer Science",
+    city: "Гент",
+    language: "Потрібно уточнити",
+    tuition: "Потрібно уточнити",
+    deadline: "Потрібно уточнити",
+    requirements: "Додати вимоги з офіційного джерела.",
+    documents: "Додати перелік документів з Excel.",
+    certification: "Потрібно уточнити",
+    source: "",
+    notes: ""
+  }
+];
+
+const $ = id => document.getElementById(id);
+const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+  "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+}[ch]));
+
+function initFilters() {
+  const universities = [...new Set(programs.map(p => p.university).filter(Boolean))].sort();
+  const cities = [...new Set(programs.map(p => p.city).filter(Boolean))].sort();
+  universities.forEach(v => $("universityFilter").add(new Option(v, v)));
+  cities.forEach(v => $("cityFilter").add(new Option(v, v)));
+}
+
+function render() {
+  const query = $("search").value.trim().toLowerCase();
+  const uni = $("universityFilter").value;
+  const city = $("cityFilter").value;
+
+  const filtered = programs.map((p, i) => ({...p, _index:i})).filter(p => {
+    const text = [p.university, p.program, p.city, p.language].join(" ").toLowerCase();
+    return text.includes(query) && (!uni || p.university === uni) && (!city || p.city === city);
+  });
+
+  $("count").textContent = filtered.length;
+  $("programGrid").innerHTML = filtered.map(p => `
+    <article class="card">
+      <div class="card-top"><span class="tag">${safe(p.city || "Місто не вказано")}</span><span class="tag">${safe(p.language || "Мова не вказана")}</span></div>
+      <div class="university">${safe(p.university)}</div>
+      <h3>${safe(p.program)}</h3>
+      <div class="details">
+        <div><b>Вартість:</b> ${safe(p.tuition || "Не вказано")}</div>
+        <div><b>Дедлайн:</b> ${safe(p.deadline || "Не вказано")}</div>
+      </div>
+      <button onclick="showDetail(${p._index})">Переглянути програму →</button>
+    </article>
+  `).join("");
+
+  $("empty").classList.toggle("hidden", filtered.length > 0);
+}
+
+function showDetail(index) {
+  const p = programs[index];
+  $("catalog").classList.add("hidden");
+  $("detailView").classList.remove("hidden");
+
+  const fields = [
+    ["Вартість навчання", p.tuition],
+    ["Мова навчання", p.language],
+    ["Дедлайни", p.deadline],
+    ["Вимоги до вступу", p.requirements],
+    ["Необхідні документи", p.documents],
+    ["Вимоги до засвідчення документів", p.certification],
+    ["Примітки менеджера", p.notes]
+  ];
+
+  $("detail").innerHTML = `
+    <div class="detail-heading">
+      <p>${safe(p.university)} · ${safe(p.city)}</p>
+      <h2>${safe(p.program)}</h2>
+    </div>
+    <div class="detail-grid">
+      ${fields.map(([title, value]) => `
+        <section class="detail-section">
+          <h3>${safe(title)}</h3>
+          <p>${safe(value || "Інформація не внесена")}</p>
+        </section>
+      `).join("")}
+      <section class="detail-section">
+        <h3>Офіційне джерело</h3>
+        <p>${p.source ? `<a href="${safe(p.source)}" target="_blank" rel="noopener noreferrer">Відкрити джерело →</a>` : "Посилання не додано"}</p>
+      </section>
+    </div>
+  `;
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function showCatalog() {
+  $("detailView").classList.add("hidden");
+  $("catalog").classList.remove("hidden");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+$("search").addEventListener("input", render);
+$("universityFilter").addEventListener("change", render);
+$("cityFilter").addEventListener("change", render);
+initFilters();
+render();
+</script>
+</body>
+</html>
