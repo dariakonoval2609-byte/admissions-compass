@@ -223,6 +223,8 @@ footer {
 <script>
 let programs = [];
 
+  const $ = id => document.getElementById(id);
+
 function parseCSV(text) {
   const rows = [];
   let row = [];
@@ -309,7 +311,6 @@ async function loadPrograms() {
   }
 }
 
-const $ = id => document.getElementById(id);
 
 function initFilters() {
   const universities = [...new Set(programs.map(p => p.university).filter(Boolean))].sort();
