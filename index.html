@@ -264,80 +264,43 @@
       text-align: center;
     }
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 10;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.45);
-    }
-
-    .modal.open {
-      display: flex;
-    }
-
-    .modal-content {
-      width: 100%;
-      max-width: 720px;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 28px;
-      border-radius: 16px;
-      background: white;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .modal-header h2 {
-      margin-top: 0;
-      line-height: 1.5;
-    }
-
-    .close {
-      border: none;
-      background: transparent;
-      font-size: 28px;
-      cursor: pointer;
-    }
-
-    .detail-row {
-      padding: 15px 0;
-      border-bottom: 1px solid var(--border);
-      line-height: 1.7;
-      overflow-wrap: anywhere;
-    }
-
-    .detail-row strong {
-      display: block;
-      margin-bottom: 6px;
-    }
-
-
-    .procedure-panel {
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 2px solid var(--brand-light);
-    }
-    .procedure-panel h3 { margin: 0 0 8px; font-size: 20px; }
-    .procedure-intro { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0 0 18px; }
-    .procedure-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
-    .procedure-controls label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 7px; }
-    .procedure-controls select { padding: 12px; }
-    .procedure-group { margin-top: 18px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .procedure-group h4 { margin: 0; padding: 13px 16px; background: var(--brand-light); color: var(--brand); font-size: 14px; }
-    .procedure-field { padding: 14px 16px; border-top: 1px solid var(--border); line-height: 1.7; overflow-wrap: anywhere; font-size: 13px; }
-    .procedure-field strong { display: block; margin-bottom: 6px; font-size: 13px; }
-    .procedure-field a { color: var(--brand); overflow-wrap: anywhere; }
-    .procedure-note { padding: 14px; border-radius: 10px; background: #fff8e8; color: #76551b; font-size: 13px; line-height: 1.7; }
-    @media (max-width: 620px) { .procedure-controls { grid-template-columns: 1fr; } }
+    .main-nav { display:flex; gap:10px; flex-wrap:wrap; max-width:1500px; margin:0 auto; padding:18px 6% 0; }
+    .nav-button { border:1px solid var(--border); border-radius:10px 10px 0 0; padding:14px 20px; background:#fff; color:var(--text); font:600 13px Montserrat,sans-serif; cursor:pointer; }
+    .nav-button.active { border-color:var(--brand); background:var(--brand-light); color:var(--brand); }
+    .hidden { display:none !important; }
+    .page-view { min-height:55vh; }
+    .back-button { margin-bottom:26px; }
+    .selector-card { max-width:620px; padding:22px; margin:0 0 28px; border:1px solid var(--border); border-radius:16px; background:#fff; }
+    .selector-card label,.detail-toolbar label { display:block; margin-bottom:9px; font-size:13px; font-weight:700; }
+    .category-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+    .category-card { display:flex; flex-direction:column; align-items:flex-start; text-align:left; min-height:190px; padding:24px; border:1px solid var(--border); border-radius:16px; background:#fff; cursor:pointer; transition:transform .2s,box-shadow .2s,border-color .2s; font:inherit; }
+    .category-card:hover { transform:translateY(-3px); border-color:var(--brand); box-shadow:0 8px 24px rgba(0,0,0,.06); }
+    .category-icon { display:grid; place-items:center; width:46px; height:46px; margin-bottom:17px; border-radius:13px; background:var(--brand-light); color:var(--brand); font-size:23px; }
+    .category-card strong { margin-bottom:9px; font-size:16px; line-height:1.45; }
+    .category-card span:last-child { color:var(--muted); font-size:12px; line-height:1.65; }
+    .program-page-heading { padding:28px; margin-bottom:22px; border-radius:18px; background:#fff; border:1px solid var(--border); }
+    .program-page-heading h2 { margin:10px 0; font-size:28px; line-height:1.4; }
+    .eyebrow { color:var(--brand); text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:800; }
+    .program-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:22px 0; }
+    .summary-item { padding:17px; border:1px solid var(--border); border-radius:12px; background:#fff; }
+    .summary-item span { display:block; color:var(--muted); font-size:11px; margin-bottom:8px; }
+    .summary-item strong { font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+    .content-section { padding:24px; margin:18px 0; border:1px solid var(--border); border-radius:16px; background:#fff; }
+    .content-section h3 { margin:0 0 16px; font-size:20px; }
+    .detail-page-heading { padding:10px 0 6px; }
+    .detail-page-heading .section-title { margin-top:8px; }
+    .detail-toolbar { display:flex; align-items:center; gap:18px; max-width:650px; padding:18px; margin:10px 0 24px; border:1px solid var(--border); border-radius:14px; background:#fff; }
+    .detail-toolbar label { margin:0; min-width:70px; }
+    .detail-toolbar select { flex:1; padding:12px; }
+    .structured-content { display:grid; grid-template-columns:1fr; gap:18px; }
+    .info-group { border:1px solid var(--border); border-radius:15px; background:#fff; overflow:hidden; }
+    .info-group h3 { margin:0; padding:18px 22px; background:var(--brand-light); color:var(--brand); font-size:16px; }
+    .info-field { padding:20px 22px; border-top:1px solid var(--border); line-height:1.8; overflow-wrap:anywhere; font-size:14px; }
+    .info-field strong { display:block; margin-bottom:8px; font-size:13px; }
+    .info-field a { color:var(--brand); overflow-wrap:anywhere; }
+    .procedure-note { padding:18px 20px; border-radius:12px; background:#fff8e8; color:#76551b; font-size:13px; line-height:1.8; }
+    .link-list { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .link-list a { display:inline-block; padding:10px 13px; border:1px solid var(--brand); border-radius:9px; color:var(--brand); text-decoration:none; font-size:12px; font-weight:700; }
 
     @media (max-width: 1000px) {
       .program-grid {
@@ -389,9 +352,16 @@
       }
 
       .filters,
-      .program-grid {
+      .program-grid,
+      .category-grid,
+      .program-summary-grid {
         grid-template-columns: 1fr;
       }
+      .main-nav { padding-left:5%; padding-right:5%; }
+      .nav-button { flex:1; padding:12px 10px; }
+      .detail-toolbar { align-items:stretch; flex-direction:column; }
+      .program-page-heading h2 { font-size:23px; }
+      .info-field { padding:16px; }
 
       .filters input {
         grid-column: auto;
@@ -421,7 +391,12 @@
     </div>
   </header>
 
-  <main>
+  <nav class="main-nav" aria-label="Головна навігація">
+    <button class="nav-button active" id="navCatalog" type="button">Каталог освітніх програм</button>
+    <button class="nav-button" id="navProcedures" type="button">Оформлення документів</button>
+  </nav>
+
+  <main id="catalogPage" class="page-view">
     <h2 class="section-title">Каталог освітніх програм</h2>
 
     <p class="section-description">
@@ -469,16 +444,39 @@
     перевірки за офіційними джерелами.
   </footer>
 
-  <div id="detailModal" class="modal" role="dialog" aria-modal="true"
-       aria-labelledby="modalTitle">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modalTitle">Інформація про програму</h2>
-        <button class="close" id="closeModal" aria-label="Закрити">&times;</button>
-      </div>
-      <div id="modalBody"></div>
+  <main id="programPage" class="page-view hidden">
+    <button class="button secondary back-button" id="backToCatalog" type="button">← Назад до каталогу</button>
+    <div id="programPageContent"></div>
+  </main>
+
+  <main id="proceduresPage" class="page-view hidden">
+    <h2 class="section-title">Оформлення документів і переїзд</h2>
+    <p class="section-description">Покрокова інформація про тимчасовий захист, студентську візу, житло, медичне страхування та контакти установ.</p>
+    <div class="selector-card">
+      <label for="globalProcedureCity">Оберіть місто навчання або проживання</label>
+      <select id="globalProcedureCity"><option value="">Оберіть місто</option></select>
     </div>
-  </div>
+    <div id="procedureCategoryGrid" class="category-grid"></div>
+    <div id="globalProcedureMessage" class="procedure-note hidden"></div>
+  </main>
+
+  <main id="procedureDetailPage" class="page-view hidden">
+    <button class="button secondary back-button" id="backToProcedures" type="button">← Назад до розділів оформлення</button>
+    <div class="detail-page-heading">
+      <div class="eyebrow" id="procedureDetailEyebrow">Бельгія</div>
+      <h2 class="section-title" id="procedureDetailTitle">Інформація про процедуру</h2>
+      <p class="section-description" id="procedureDetailDescription"></p>
+    </div>
+    <div class="detail-toolbar">
+      <label for="detailProcedureCity">Місто</label>
+      <select id="detailProcedureCity"></select>
+    </div>
+    <div id="procedureDetailContent" class="structured-content"></div>
+  </main>
+
+  <footer>
+    Cleverly UA · Admissions Compass · Перед поданням документів перевіряйте актуальні вимоги офіційних установ.
+  </footer>
 
   <script>
     "use strict";
@@ -615,9 +613,9 @@
       proceduresLoadError = "";
       try {
         const response = await fetch("./belgium-procedures.csv", { cache: "no-store" });
-        if (!response.ok) throw new Error("Не вдалося завантажити файл процедур (HTTP " + response.status + ").");
+        if (!response.ok) throw new Error("Не вдалося завантажити інформацію (HTTP " + response.status + ").");
         const rows = parseCSVRows(await response.text());
-        if (rows.length < 3) throw new Error("Файл процедур порожній або має неправильну структуру.");
+        if (rows.length < 3) throw new Error("Дані оформлення відсутні або мають неправильний формат.");
 
         // Структура файлу транспонована: рядок 1 містить тип процедури,
         // рядок 2 — місто навчання; далі кожна процедура займає свою колонку.
@@ -646,7 +644,7 @@
         }
 
         if (!Object.keys(proceduresByCity).length) {
-          throw new Error("Не вдалося визначити міста та типи процедур у CSV. Перевір заголовки файлу.");
+          throw new Error("Не вдалося визначити міста та типи процедур. Перевірте формат даних.");
         }
       } catch (error) {
         proceduresLoadError = error.message || "Помилка завантаження процедур.";
@@ -665,74 +663,141 @@
     }
 
     function getProcedureCities(program) {
-      const programCities = String(program.city || "")
-        .split(/\s*\/\s*/)
-        .map(city => city.trim())
-        .filter(Boolean);
-      return programCities.filter(city => Object.keys(proceduresByCity).some(key => normalizeCity(key) === normalizeCity(city)))
-        .map(city => Object.keys(proceduresByCity).find(key => normalizeCity(key) === normalizeCity(city)));
+      const programCities = String(program.city || "").split(/\s*\/\s*/).map(city => city.trim()).filter(Boolean);
+      return programCities.map(city => Object.keys(proceduresByCity).find(key => normalizeCity(key) === normalizeCity(city))).filter(Boolean);
     }
 
-    function groupProcedureFields(fields) {
-      const groups = [
-        { title: "Місто оформлення", test: label => /місто оформлення/i.test(label) },
-        { title: "Необхідні документи", test: label => /перелік документів/i.test(label) },
-        { title: "Процедура та строки", test: label => /процедура та терміни|дедлайни|етап оформлення/i.test(label) },
-        { title: "Медичне страхування", test: label => /медичне страхування|страхов/i.test(label) },
-        { title: "Житло та гуртожитки", test: label => /гуртожитки|житло|договір з гуртожитком/i.test(label) },
-        { title: "Контакти муніципалітетів", test: label => /контакти муніципалітетів/i.test(label) },
-        { title: "Корисні посилання", test: label => /посилання/i.test(label) }
-      ];
-      const result = groups.map(group => ({ title: group.title, fields: fields.filter(field => group.test(field.label)) }))
-        .filter(group => group.fields.length);
-      const grouped = new Set(result.flatMap(group => group.fields));
-      const other = fields.filter(field => !grouped.has(field));
-      if (other.length) result.unshift({ title: "Інша інформація з таблиці", fields: other });
-      return result;
+    const procedureCategories = {
+      protection: { title: "Тимчасовий захист і карта A", icon: "🛂", description: "Умови, документи та кроки оформлення тимчасового захисту.", type: "TRP (card-A)" },
+      visa: { title: "Студентська віза D", icon: "🛃", description: "Підготовка документів, подання заяви та наступні кроки.", type: "Віза-D" },
+      housing: { title: "Житло та гуртожитки", icon: "🏠", description: "Варіанти проживання та порядок оформлення договору." },
+      insurance: { title: "Медичне страхування", icon: "🩺", description: "Відомості про страхування та корисні посилання." },
+      contacts: { title: "Контакти установ", icon: "🏛️", description: "Муніципалітети, місця оформлення та важливі контакти." },
+      documents: { title: "Документи та корисні посилання", icon: "📄", description: "Переліки документів, інструкції та офіційні ресурси." },
+      other: { title: "Інша корисна інформація", icon: "ℹ️", description: "Додаткові умови та примітки для підготовки до переїзду." }
+    };
+
+    function getFieldsForCity(city, type) {
+      return (proceduresByCity[city] && proceduresByCity[city][type]) || [];
     }
 
-    function renderProcedurePanel(program) {
+    function allCityFields(city) {
+      const merged = [];
+      ["TRP (card-A)", "Віза-D"].forEach(type => getFieldsForCity(city, type).forEach(field => {
+        if (!merged.some(item => normalizeCity(item.label) === normalizeCity(field.label) && item.value === field.value)) merged.push(field);
+      }));
+      return merged;
+    }
+
+    function categoryFields(city, categoryKey) {
+      const all = allCityFields(city);
+      if (categoryKey === "protection") return getFieldsForCity(city, "TRP (card-A)").filter(f => !/гуртожитки|житло|договір з гуртожитком|медичне страхування|страхов|контакти муніципалітетів/i.test(f.label));
+      if (categoryKey === "visa") return getFieldsForCity(city, "Віза-D").filter(f => !/гуртожитки|житло|договір з гуртожитком|медичне страхування|страхов|контакти муніципалітетів/i.test(f.label));
+      if (categoryKey === "housing") return all.filter(f => /гуртожитки|житло|договір з гуртожитком/i.test(f.label));
+      if (categoryKey === "insurance") return all.filter(f => /медичне страхування|страхов/i.test(f.label));
+      if (categoryKey === "contacts") return all.filter(f => /контакти муніципалітетів|місто оформлення/i.test(f.label));
+      if (categoryKey === "documents") return all.filter(f => /перелік документів|посилання на інструкцію|важливі посилання|посилання/i.test(f.label));
+      const known = /гуртожитки|житло|договір з гуртожитком|медичне страхування|страхов|контакти муніципалітетів|місто оформлення|перелік документів|посилання на інструкцію|важливі посилання|посилання/i;
+      return all.filter(f => !known.test(f.label));
+    }
+
+    function renderFields(fields, heading) {
+      if (!fields.length) return `<div class="procedure-note">Для цього розділу поки немає доступної інформації для обраного міста.</div>`;
+      return `<section class="info-group"><h3>${escapeHTML(heading)}</h3>${fields.map(field =>
+        `<div class="info-field"><strong>${escapeHTML(field.label)}</strong><div>${richText(field.value)}</div></div>`
+      ).join("")}</section>`;
+    }
+
+    function renderCategoryCards() {
+      return Object.entries(procedureCategories).map(([key, category]) => `
+        <button type="button" class="category-card" data-category="${key}">
+          <span class="category-icon" aria-hidden="true">${category.icon}</span>
+          <strong>${escapeHTML(category.title)}</strong>
+          <span>${escapeHTML(category.description)}</span>
+        </button>`).join("");
+    }
+
+    function showView(viewId) {
+      ["catalogPage", "programPage", "proceduresPage", "procedureDetailPage"].forEach(id => $(id).classList.toggle("hidden", id !== viewId));
+      $("navCatalog").classList.toggle("active", viewId === "catalogPage" || viewId === "programPage");
+      $("navProcedures").classList.toggle("active", viewId === "proceduresPage" || viewId === "procedureDetailPage");
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function fillCitySelect(select, preferredCity = "") {
+      if (!select) return;
+      const cities = Object.keys(proceduresByCity).sort((a,b) => a.localeCompare(b, "uk"));
+      select.innerHTML = '<option value="">Оберіть місто</option>' + cities.map(city => `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`).join("");
+      const match = cities.find(city => normalizeCity(city) === normalizeCity(preferredCity));
+      if (match) select.value = match;
+    }
+
+    let activeProcedureCategory = "protection";
+    let activeProcedureCity = "";
+
+    function openProcedureCategory(categoryKey, city = "") {
+      activeProcedureCategory = categoryKey;
+      activeProcedureCity = city || $("globalProcedureCity").value || Object.keys(proceduresByCity)[0] || "";
+      const category = procedureCategories[categoryKey] || procedureCategories.other;
+      $("procedureDetailEyebrow").textContent = "Бельгія · Admissions Compass";
+      $("procedureDetailTitle").textContent = category.title;
+      $("procedureDetailDescription").textContent = category.description;
+      fillCitySelect($("detailProcedureCity"), activeProcedureCity);
+      activeProcedureCity = $("detailProcedureCity").value;
+      renderProcedureDetail();
+      showView("procedureDetailPage");
+    }
+
+    function renderProcedureDetail() {
+      const city = $("detailProcedureCity").value;
+      activeProcedureCity = city;
+      const category = procedureCategories[activeProcedureCategory] || procedureCategories.other;
+      const content = $("procedureDetailContent");
       if (proceduresLoadError) {
-        return `<section class="procedure-panel"><h3>Оформлення документів і житло</h3>
-          <div class="procedure-note">${escapeHTML(proceduresLoadError)} Перевір, чи файл <b>belgium-procedures.csv</b> розміщений поруч з index.html. Каталог освітніх програм продовжує працювати незалежно.</div></section>`;
-      }
-      const availableCities = getProcedureCities(program);
-      if (!availableCities.length) {
-        return `<section class="procedure-panel"><h3>Оформлення документів і житло</h3>
-          <p class="procedure-intro">Місто навчання: <b>${escapeHTML(program.city || "не вказано")}</b></p>
-          <div class="procedure-note">У файлі процедур немає точного збігу для цього міста. Інформацію з іншого міста не підставлено, щоб не показати менеджеру неправильні умови.</div></section>`;
-      }
-      const firstCity = availableCities[0];
-      const cityOptions = availableCities.map(city => `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`).join("");
-      const methods = ["TRP (card-A)", "Віза-D"];
-      const methodOptions = methods.map(method => `<option value="${escapeHTML(method)}">${escapeHTML(method === "Віза-D" ? "Студентська віза D" : method)}</option>`).join("");
-      return `<section class="procedure-panel" data-procedure-panel>
-        <h3>Оформлення документів і житло</h3>
-        <p class="procedure-intro">Дані підібрано за містом навчання з файлу процедур. Обери напрямок, щоб переглянути відповідні документи, етапи, житло, страхування та контакти.</p>
-        <div class="procedure-controls">
-          <div><label for="procedureCity">Місто навчання</label><select id="procedureCity">${cityOptions}</select></div>
-          <div><label for="procedureType">Тип процедури</label><select id="procedureType">${methodOptions}</select></div>
-        </div>
-        <div id="procedureDetails"></div>
-      </section>`;
-    }
-
-    function updateProcedureDetails() {
-      const citySelect = $("procedureCity");
-      const typeSelect = $("procedureType");
-      const target = $("procedureDetails");
-      if (!citySelect || !typeSelect || !target) return;
-      const city = citySelect.value;
-      const type = typeSelect.value;
-      const fields = (proceduresByCity[city] && proceduresByCity[city][type]) || [];
-      if (!fields.length) {
-        target.innerHTML = '<div class="procedure-note">Для цього міста та типу процедури в таблиці немає заповнених даних.</div>';
+        content.innerHTML = `<div class="procedure-note">Не вдалося завантажити інформацію. Перевірте доступність даних і спробуйте оновити сторінку.</div>`;
         return;
       }
-      const groups = groupProcedureFields(fields);
-      target.innerHTML = groups.map(group => `<div class="procedure-group"><h4>${escapeHTML(group.title)}</h4>${group.fields.map(field =>
-        `<div class="procedure-field"><strong>${escapeHTML(field.label)}</strong><div>${richText(field.value)}</div></div>`
-      ).join("")}</div>`).join("");
+      if (!city) {
+        content.innerHTML = '<div class="procedure-note">Оберіть місто, щоб переглянути інформацію.</div>';
+        return;
+      }
+      const fields = categoryFields(city, activeProcedureCategory);
+      content.innerHTML = `<div class="content-section"><h3>${escapeHTML(category.title)} · ${escapeHTML(city)}</h3><p class="procedure-intro">Інформація подана окремими блоками для зручної роботи менеджера.</p></div>${renderFields(fields, category.title)}`;
+    }
+
+    function openProgramPage(program) {
+      const fields = [
+        ["Країна", program.country], ["Місто навчання", program.city], ["Мова навчання", program.language],
+        ["Вартість навчання", program.tuition], ["Дедлайн", program.deadline], ["Тип закладу", program.institutionType],
+        ["Вимоги до вступу", program.requirements], ["Необхідні документи", program.documents],
+        ["Засвідчення документів", program.certification], ["Комісія за розгляд заявки", program.commission]
+      ];
+      const summary = fields.filter(([label,value]) => value && !["Вимоги до вступу","Необхідні документи","Засвідчення документів","Комісія за розгляд заявки"].includes(label));
+      const detail = fields.filter(([label,value]) => value && ["Вимоги до вступу","Необхідні документи","Засвідчення документів","Комісія за розгляд заявки"].includes(label));
+      const cities = getProcedureCities(program);
+      const categoryButtons = Object.entries(procedureCategories).map(([key,cat]) => `<button type="button" class="category-card" data-program-category="${key}" data-city="${escapeHTML(cities[0] || "")}"><span class="category-icon">${cat.icon}</span><strong>${escapeHTML(cat.title)}</strong><span>${escapeHTML(cat.description)}</span></button>`).join("");
+      $("programPageContent").innerHTML = `
+        <section class="program-page-heading"><div class="eyebrow">Освітня програма</div><h2>${escapeHTML(program.university || "Університет")}</h2><p class="card-program">${escapeHTML(program.program || "Спеціальність не вказана")}</p>
+        <div class="program-summary-grid">${summary.map(([label,value]) => `<div class="summary-item"><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join("")}</div>
+        ${program.source ? `<a class="button secondary" href="${escapeHTML(program.source)}" target="_blank" rel="noopener noreferrer">Відкрити сторінку програми</a>` : ""}</section>
+        ${detail.length ? `<section class="content-section"><h3>Умови вступу</h3>${detail.map(([label,value]) => `<div class="detail-row"><strong>${escapeHTML(label)}</strong><div>${richText(value)}</div></div>`).join("")}</section>` : ""}
+        <section class="content-section"><h3>Оформлення та переїзд</h3><p class="procedure-intro">Оберіть потрібний розділ, щоб відкрити окрему сторінку з детальною інформацією. Місто можна змінити на наступному екрані.</p><div class="category-grid">${categoryButtons}</div></section>`;
+      $("programPageContent").querySelectorAll("[data-program-category]").forEach(button => button.addEventListener("click", () => openProcedureCategory(button.dataset.programCategory, button.dataset.city)));
+      showView("programPage");
+    }
+
+    function initProcedureNavigation() {
+      fillCitySelect($("globalProcedureCity"));
+      $("procedureCategoryGrid").innerHTML = renderCategoryCards();
+      $("procedureCategoryGrid").querySelectorAll("[data-category]").forEach(button => button.addEventListener("click", () => {
+        if (!$ ("globalProcedureCity").value) {
+          $("globalProcedureMessage").textContent = "Спочатку оберіть місто.";
+          $("globalProcedureMessage").classList.remove("hidden");
+          return;
+        }
+        $("globalProcedureMessage").classList.add("hidden");
+        openProcedureCategory(button.dataset.category, $("globalProcedureCity").value);
+      }));
     }
 
     async function loadPrograms() {
@@ -900,86 +965,30 @@
 
       $("programGrid").querySelectorAll("[data-details]").forEach(button => {
         button.addEventListener("click", () => {
-          showDetails(filtered[Number(button.dataset.details)]);
+          openProgramPage(filtered[Number(button.dataset.details)]);
         });
       });
-    }
-
-    function showDetails(program) {
-      $("modalTitle").textContent =
-        program.university || "Інформація про програму";
-
-      const fields = [
-        ["Програма / спеціальність", program.program],
-        ["Місто", program.city],
-        ["Країна", program.country],
-        ["Тип закладу", program.institutionType],
-        ["Категорія", program.category],
-        ["Партнер", program.partner],
-        ["Мова навчання", program.language],
-        ["Вартість навчання", program.tuition],
-        ["Дедлайн", program.deadline],
-        ["Вимоги до вступу", program.requirements],
-        ["Необхідні документи", program.documents],
-        ["Засвідчення документів", program.certification],
-        ["Комісія за розгляд заявки", program.commission]
-      ];
-
-      let html = fields
-        .filter(([label, value]) => value)
-        .map(([label, value]) => `
-          <div class="detail-row">
-            <strong>${escapeHTML(label)}</strong>
-            <div>${escapeHTML(value).replace(/\n/g, "<br>")}</div>
-          </div>
-        `).join("");
-
-      if (program.source) {
-        html += `
-          <div class="detail-row">
-            <strong>Офіційне посилання / джерело з таблиці</strong>
-            <a href="${escapeHTML(program.source)}"
-               target="_blank"
-               rel="noopener noreferrer">
-              Відкрити джерело
-            </a>
-          </div>
-        `;
-      }
-
-      if (!html) {
-        html = "<p>У таблиці немає додаткової інформації для цього запису.</p>";
-      }
-
-      html += renderProcedurePanel(program);
-      $("modalBody").innerHTML = html;
-      $("detailModal").classList.add("open");
-      updateProcedureDetails();
-      if ($("procedureCity")) $("procedureCity").addEventListener("change", updateProcedureDetails);
-      if ($("procedureType")) $("procedureType").addEventListener("change", updateProcedureDetails);
     }
 
     $("search").addEventListener("input", render);
     $("universityFilter").addEventListener("change", render);
     $("cityFilter").addEventListener("change", render);
+    $("navCatalog").addEventListener("click", () => showView("catalogPage"));
+    $("navProcedures").addEventListener("click", () => showView("proceduresPage"));
+    $("backToCatalog").addEventListener("click", () => showView("catalogPage"));
+    $("backToProcedures").addEventListener("click", () => showView("proceduresPage"));
+    $("detailProcedureCity").addEventListener("change", renderProcedureDetail);
+    $("globalProcedureCity").addEventListener("change", () => $("globalProcedureMessage").classList.add("hidden"));
 
-    $("closeModal").addEventListener("click", () => {
-      $("detailModal").classList.remove("open");
-    });
-
-    $("detailModal").addEventListener("click", event => {
-      if (event.target === $("detailModal")) {
-        $("detailModal").classList.remove("open");
+    async function initializeApp() {
+      await loadPrograms();
+      initProcedureNavigation();
+      if (proceduresLoadError) {
+        $("globalProcedureMessage").textContent = "Інформація про оформлення тимчасово недоступна. Оновіть сторінку пізніше.";
+        $("globalProcedureMessage").classList.remove("hidden");
       }
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        $("detailModal").classList.remove("open");
-      }
-    });
-
-    loadPrograms();
+    }
+    initializeApp();
   </script>
 </body>
 </html>
