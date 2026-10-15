@@ -296,11 +296,11 @@
     .info-group { border:1px solid var(--border); border-radius:15px; background:#fff; overflow:hidden; }
     .info-group h3 { margin:0; padding:18px 22px; background:var(--brand-light); color:var(--brand); font-size:16px; }
     .info-field { padding:20px 22px; border-top:1px solid var(--border); line-height:1.8; overflow-wrap:anywhere; font-size:14px; }
-    .info-field strong { display:block; margin-bottom:8px; font-size:13px; }
+    .info-field > strong { display:block; margin-bottom:10px; font-size:14px; color:#252525; }
     .info-field a { color:var(--brand); overflow-wrap:anywhere; }
     .procedure-note { padding:18px 20px; border-radius:12px; background:#fff8e8; color:#76551b; font-size:13px; line-height:1.8; }
     .link-list { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
-    .link-list a { display:inline-block; padding:10px 13px; border:1px solid var(--brand); border-radius:9px; color:var(--brand); text-decoration:none; font-size:12px; font-weight:700; }
+    .link-list a { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; border:1px solid var(--brand); border-radius:10px; background:var(--brand); color:#fff!important; text-decoration:none; font-size:12px; font-weight:700; line-height:1.45; max-width:100%; }
 
 
     .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -672,19 +672,19 @@
         const rows = parseCSVRows(await response.text());
         if (rows.length < 3) throw new Error("Дані оформлення відсутні або мають неправильний формат.");
 
-        // Структура файлу транспонована: рядок 1 містить тип процедури,
-        // рядок 2 — місто навчання; далі кожна процедура займає свою колонку.
+        // У файлі перший рядок задає тип маршруту, другий — місто навчання.
+        // Кожна пара колонок відповідає одному місту: TRP (card-A), потім Віза-D.
         const procedureHeaders = rows[0] || [];
         const cityRow = rows[1] || [];
         for (let col = 1; col < Math.max(procedureHeaders.length, cityRow.length); col++) {
           const typeHeader = String(procedureHeaders[col] || "").trim().toLocaleLowerCase("uk");
-          const rawCity = String(cityRow[col] || "").trim();
+          const rawCity = String(cityRow[col] || "").replace(/\s+/g, " ").trim();
           if (!rawCity) continue;
           const type = typeHeader.includes("trp") ? "TRP (card-A)" :
             (typeHeader.includes("віза") || typeHeader.includes("visa") ? "Віза-D" : "");
           if (!type) continue;
 
-          const city = rawCity.replace(/\s+/g, " ").trim();
+          const city = rawCity;
           if (!proceduresByCity[city]) {
             proceduresByCity[city] = { "TRP (card-A)": [], "Віза-D": [] };
           }
@@ -693,7 +693,7 @@
           for (let r = 2; r < rows.length; r++) {
             const label = String(rows[r][0] || "").trim().replace(/:\s*$/, "");
             const value = String(rows[r][col] || "").trim();
-            if (label && value) fields.push({ label, value });
+            if (label && value) fields.push({ label, value, rowIndex: r });
           }
           proceduresByCity[city][type] = fields;
         }
@@ -709,12 +709,11 @@
 
     function richText(value) {
       const safe = escapeHTML(value);
-      const linked = safe.replace(/(https?:\/\/[^\s<]+)/g, rawUrl => {
+      return safe.replace(/(https?:\/\/[^\s<]+)/g, rawUrl => {
         const url = rawUrl.replace(/[),.;]+$/, "");
         const trailing = rawUrl.slice(url.length);
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>${trailing}`;
-      });
-      return linked.replace(/\r?\n/g, "<br>");
+        return `<a class="link-button" href="${url}" target="_blank" rel="noopener noreferrer">Відкрити офіційний ресурс ↗</a>${trailing}`;
+      }).replace(/\r?\n/g, "<br>");
     }
 
     function getProcedureCities(program) {
@@ -749,39 +748,96 @@
     function categoryFields(city, categoryKey, routeType = "") {
       const routeTypes = routeType ? [routeType] : ["TRP (card-A)", "Віза-D"];
       const all = [];
-      routeTypes.forEach(type => getFieldsForCity(city, type).forEach(f => all.push({...f, routeType:type})));
+      routeTypes.forEach(type => getFieldsForCity(city, type).forEach(f => all.push({ ...f, routeType: type })));
+      // Дедуплікуємо однакові поля, але не змінюємо порядок рядків джерела.
+      const unique = all.filter((field, index) => all.findIndex(other =>
+        other.rowIndex === field.rowIndex && other.value === field.value && other.routeType === field.routeType
+      ) === index).sort((a, b) => a.rowIndex - b.rowIndex);
+
       const isHousing = f => /гуртожитки|житло|договір з гуртожитком/i.test(f.label);
       const isInsurance = f => /медичне страхування|страхов/i.test(f.label);
       const isContacts = f => /контакти муніципалітетів|місто оформлення/i.test(f.label);
-      const isDocuments = f => /перелік документів|посилання на інструкцію|важливі посилання|посилання/i.test(f.label);
-      const isRelocation = f => /процедура та терміни|дедлайни|етап оформлення|підготовка до переїзду|після прибуття/i.test(f.label);
+      const isBorderInstruction = f => /посилання на інструкцію з отримання довідки/i.test(f.label);
+      const isDocuments = f => /перелік документів/i.test(f.label);
+      const isImportantLinks = f => /важливі посилання/i.test(f.label);
+      const isDeadlines = f => /дедлайни/i.test(f.label);
+      const isProcedure = f => /процедура та терміни/i.test(f.label);
+      const isStage = f => /етап оформлення/i.test(f.label);
+      const isRelocation = f => /підготовка до переїзду|після прибуття/i.test(f.value);
+
       if (categoryKey === "protection" || categoryKey === "visa") {
-        return all.filter(f => !isHousing(f) && !isInsurance(f) && !isContacts(f) && !isDocuments(f));
+        // Основний маршрут: документи → інструкція → процедура → дедлайни → етапи 1–5 → контакти → важливі посилання.
+        // Контакти муніципалітету (рядок A17 у вихідній таблиці) навмисно показуємо після п'ятого етапу.
+        return unique.filter(f => isDocuments(f) || isBorderInstruction(f) || isProcedure(f) || isDeadlines(f) || isStage(f) || isContacts(f) || isImportantLinks(f))
+          .sort((a, b) => {
+            const order = f => isDocuments(f) ? 1 : isBorderInstruction(f) ? 2 : isProcedure(f) ? 3 : isDeadlines(f) ? 4 : isStage(f) ? 5 : isContacts(f) ? 6 : isImportantLinks(f) ? 7 : 99;
+            return order(a) - order(b) || a.rowIndex - b.rowIndex;
+          });
       }
-      if (categoryKey === "housing") return all.filter(isHousing);
-      if (categoryKey === "insurance") return all.filter(isInsurance);
-      if (categoryKey === "contacts") return all.filter(isContacts);
-      if (categoryKey === "documents") return all.filter(f => /перелік документів/i.test(f.label));
-      if (categoryKey === "links") return all.filter(f => /посилання/i.test(f.label));
-      if (categoryKey === "relocation") return all.filter(isRelocation);
-      const known = f => isHousing(f) || isInsurance(f) || isContacts(f) || isDocuments(f) || isRelocation(f);
-      return all.filter(f => !known(f));
+      if (categoryKey === "housing") return unique.filter(f => isHousing(f) || /процедура оформлення договору з гуртожитком/i.test(f.label));
+      if (categoryKey === "insurance") return unique.filter(isInsurance);
+      if (categoryKey === "contacts") return unique.filter(isContacts);
+      if (categoryKey === "documents") return unique.filter(f => isDocuments(f) || isBorderInstruction(f));
+      if (categoryKey === "links") return unique.filter(f => isImportantLinks(f) || isBorderInstruction(f));
+      if (categoryKey === "relocation") return unique.filter(f => isProcedure(f) || isDeadlines(f) || isStage(f) || isRelocation(f));
+      const known = f => isHousing(f) || isInsurance(f) || isContacts(f) || isDocuments(f) || isBorderInstruction(f) || isImportantLinks(f) || isProcedure(f) || isDeadlines(f) || isStage(f);
+      return unique.filter(f => !known(f));
+    }
+
+    function extractNamedLinks(raw) {
+      const links = [];
+      let text = String(raw || "");
+      // Спершу розбираємо Markdown-посилання: [Назва](https://...)
+      text = text.replace(/\[([^\]]+)\]\(\s*(https?:\/\/[^)\s]+)\s*\)/g, (match, label, url) => {
+        links.push({ label: String(label).trim(), url: String(url).replace(/[),.;]+$/, "") });
+        return String(label).trim();
+      });
+      // Потім URL, що записані як «Назва ресурсу: https://...». Назву беремо з тексту перед URL.
+      const urlRegex = /https?:\/\/[^\s<>"']+/g;
+      let match;
+      while ((match = urlRegex.exec(text)) !== null) {
+        const url = match[0].replace(/[),.;]+$/, "");
+        const before = text.slice(0, match.index);
+        const segments = before.split(/[\n|\r]/).map(part => part.trim()).filter(Boolean);
+        let segment = segments.length ? segments[segments.length - 1] : "";
+        // Якщо URL перенесений на наступний рядок, назва зазвичай стоїть у попередньому.
+        if (!segment || (!segment.includes(":") && !/https?:/i.test(segment) && segments.length > 1)) {
+          const previous = segments.length > 1 ? segments[segments.length - 2] : "";
+          if (previous && /[:：]$/.test(previous)) segment = previous;
+        }
+        let label = "";
+        const colonIndex = segment.lastIndexOf(":");
+        if (colonIndex >= 0) label = segment.slice(0, colonIndex).trim();
+        if (!label) {
+          const dash = Math.max(segment.lastIndexOf("—"), segment.lastIndexOf("–"));
+          if (dash >= 0) label = segment.slice(0, dash).trim();
+        }
+        if (!label) label = segment.trim();
+        label = label.replace(/^[-•\s]+/, "").replace(/\*\*/g, "").trim();
+        if (!label || /^https?$/i.test(label)) label = "Перейти до ресурсу";
+        if (!links.some(link => link.url === url)) links.push({ label, url });
+      }
+      return { links, text };
     }
 
     function renderFields(fields, heading) {
       if (!fields.length) return `<div class="procedure-note">Для цього розділу поки немає інформації для обраного міста.</div>`;
-      const urlRegex = /https?:\/\/[^\s<>"']+/g;
       return `<section class="info-group"><h3>${escapeHTML(heading)}</h3>${fields.map(field => {
         const raw = String(field.value || "");
-        const urls = [...new Set(raw.match(urlRegex) || [])].map(u => u.replace(/[),.;]+$/, ""));
-        let text = escapeHTML(raw);
-        text = text.replace(urlRegex, "");
-        text = text.replace(/\[([^\]]+)\]\(\s*https?:\/\/[^)]+\)/g, "$1");
+        const parsed = extractNamedLinks(raw);
+        let text = escapeHTML(parsed.text);
+        // URL прибираємо з текстового опису, але сам опис і підписи залишаємо читабельними.
+        text = text.replace(/https?:\/\/[^\s<>"']+/g, "");
         text = text.replace(/\*\*(.*?)\*\*/g, "$1");
-        const textBlock = text.trim() ? `<div class="text-content">${text.replace(/\r?\n/g,"<br>").replace(/(?:<br>\s*){3,}/g,"<br><br>")}</div>` : "";
-        const links = urls.length ? `<div class="link-list">${urls.map((url,i) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">↗ ${urls.length > 1 ? `Відкрити посилання ${i+1}` : "Відкрити посилання"}</a>`).join("")}</div>` : "";
-        const route = field.routeType ? `<div class="route-meta"><strong>${field.routeType === "TRP (card-A)" ? "Маршрут: тимчасовий захист" : "Маршрут: студентська віза D"}</strong></div>` : "";
-        return `<div class="info-field"><strong>${escapeHTML(field.label)}</strong>${route}${textBlock}${links}</div>`;
+        text = text.replace(/\[([^\]]+)\]\(\s*\)/g, "$1");
+        text = text.replace(/\r?\n/g, "<br>").replace(/(?:<br>\s*){3,}/g, "<br><br>");
+        const textBlock = text.replace(/(?:\s|<br>|\|)+$/g, "").trim() ? `<div class="text-content">${text.replace(/(?:<br>\s*){3,}/g, "<br><br>")}</div>` : "";
+        const links = parsed.links.length ? `<div class="link-list">${parsed.links.map(link => {
+          const buttonLabel = link.label === "Перейти до ресурсу" ? field.label : link.label;
+          return `<a href="${escapeHTML(link.url)}" target="_blank" rel="noopener noreferrer" title="${escapeHTML(link.url)}">↗ ${escapeHTML(buttonLabel)}</a>`;
+        }).join("")}</div>` : "";
+        const route = "";
+        return `<article class="info-field"><strong>${escapeHTML(field.label)}</strong>${route}${textBlock}${links}</article>`;
       }).join("")}</section>`;
     }
 
