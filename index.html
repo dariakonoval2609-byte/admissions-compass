@@ -750,9 +750,19 @@
       const all = [];
       routeTypes.forEach(type => getFieldsForCity(city, type).forEach(f => all.push({ ...f, routeType: type })));
       // Дедуплікуємо однакові поля, але не змінюємо порядок рядків джерела.
-      const unique = all.filter((field, index) => all.findIndex(other =>
-        other.rowIndex === field.rowIndex && other.value === field.value && other.routeType === field.routeType
-      ) === index).sort((a, b) => a.rowIndex - b.rowIndex);
+      // Для спільних категорій (житло, страхування, контакти тощо) об'єднуємо
+      // однакові записи з TRP та візи D, щоб одна й та сама інструкція не повторювалася.
+      // Для сторінок конкретного маршруту зберігаємо окремі записи за типом процедури.
+      const routeSpecific = categoryKey === "protection" || categoryKey === "visa";
+      const unique = all.filter((field, index) => all.findIndex(other => {
+        if (routeSpecific) {
+          return other.rowIndex === field.rowIndex &&
+            other.value === field.value &&
+            other.routeType === field.routeType;
+        }
+        return normalizeCity(other.label) === normalizeCity(field.label) &&
+          String(other.value || "").trim() === String(field.value || "").trim();
+      }) === index).sort((a, b) => a.rowIndex - b.rowIndex);
 
       const isHousing = f => /гуртожитки|житло|договір з гуртожитком/i.test(f.label);
       const isInsurance = f => /медичне страхування|страхов/i.test(f.label);
