@@ -320,6 +320,25 @@
       margin-bottom: 6px;
     }
 
+
+    .procedure-panel {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 2px solid var(--brand-light);
+    }
+    .procedure-panel h3 { margin: 0 0 8px; font-size: 20px; }
+    .procedure-intro { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0 0 18px; }
+    .procedure-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+    .procedure-controls label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 7px; }
+    .procedure-controls select { padding: 12px; }
+    .procedure-group { margin-top: 18px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .procedure-group h4 { margin: 0; padding: 13px 16px; background: var(--brand-light); color: var(--brand); font-size: 14px; }
+    .procedure-field { padding: 14px 16px; border-top: 1px solid var(--border); line-height: 1.7; overflow-wrap: anywhere; font-size: 13px; }
+    .procedure-field strong { display: block; margin-bottom: 6px; font-size: 13px; }
+    .procedure-field a { color: var(--brand); overflow-wrap: anywhere; }
+    .procedure-note { padding: 14px; border-radius: 10px; background: #fff8e8; color: #76551b; font-size: 13px; line-height: 1.7; }
+    @media (max-width: 620px) { .procedure-controls { grid-template-columns: 1fr; } }
+
     @media (max-width: 1000px) {
       .program-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -398,7 +417,7 @@
         </div>
       </div>
 
-      <div class="badge">Внутрішній робочий інструмент</div>
+      <div class="badge">Навігатор вступу · Cleverly UA</div>
     </div>
   </header>
 
@@ -465,19 +484,18 @@
     "use strict";
 
     let programs = [];
+    let proceduresByCity = {};
+    let proceduresLoadError = "";
 
     const $ = id => document.getElementById(id);
 
     /*
-      Читаємо CSV з підтримкою:
-      - UTF-8;
-      - полів у лапках;
-      - ком і переносів рядків усередині полів;
-      - BOM на початку файлу.
+      CSV-парсер повертає масив рядків, а не об'єкти.
+      Це важливо для файлу процедур: у ньому повторюються назви колонок
+      TRP / Віза-D, тому перетворення на об'єкти втратило б частину даних.
     */
-    function parseCSV(text) {
-      text = text.replace(/^\uFEFF/, "");
-
+    function parseCSVRows(text) {
+      text = String(text || "").replace(/^\uFEFF/, "");
       const rows = [];
       let row = [];
       let cell = "";
@@ -498,16 +516,9 @@
           row.push(cell);
           cell = "";
         } else if ((char === "\n" || char === "\r") && !inQuotes) {
-          if (char === "\r" && next === "\n") {
-            i++;
-          }
-
+          if (char === "\r" && next === "\n") i++;
           row.push(cell);
-
-          if (row.some(value => value.trim() !== "")) {
-            rows.push(row);
-          }
-
+          if (row.some(value => String(value).trim() !== "")) rows.push(row);
           row = [];
           cell = "";
         } else {
@@ -517,27 +528,20 @@
 
       if (cell !== "" || row.length > 0) {
         row.push(cell);
-
-        if (row.some(value => value.trim() !== "")) {
-          rows.push(row);
-        }
+        if (row.some(value => String(value).trim() !== "")) rows.push(row);
       }
+      return rows;
+    }
 
-      if (rows.length === 0) {
-        return [];
-      }
-
-      const headers = rows.shift().map(header =>
-        header.trim().replace(/^\uFEFF/, "")
-      );
-
-      return rows.map(values => {
+    function parseCSVObjects(text) {
+      const rows = parseCSVRows(text);
+      if (!rows.length) return [];
+      const headers = rows[0].map(header => String(header || "").trim().replace(/^\uFEFF/, ""));
+      return rows.slice(1).map(values => {
         const item = {};
-
         headers.forEach((header, index) => {
-          item[header] = (values[index] || "").trim();
+          if (header) item[header] = String(values[index] || "").trim();
         });
-
         return item;
       });
     }
@@ -602,7 +606,137 @@
       };
     }
 
+    function normalizeCity(value) {
+      return String(value || "").trim().toLocaleLowerCase("uk");
+    }
+
+    async function loadProcedures() {
+      proceduresByCity = {};
+      proceduresLoadError = "";
+      try {
+        const response = await fetch("./belgium-procedures.csv", { cache: "no-store" });
+        if (!response.ok) throw new Error("Не вдалося завантажити файл процедур (HTTP " + response.status + ").");
+        const rows = parseCSVRows(await response.text());
+        if (rows.length < 3) throw new Error("Файл процедур порожній або має неправильну структуру.");
+
+        // Структура файлу транспонована: рядок 1 містить тип процедури,
+        // рядок 2 — місто навчання; далі кожна процедура займає свою колонку.
+        const procedureHeaders = rows[0] || [];
+        const cityRow = rows[1] || [];
+        for (let col = 1; col < Math.max(procedureHeaders.length, cityRow.length); col++) {
+          const typeHeader = String(procedureHeaders[col] || "").trim().toLocaleLowerCase("uk");
+          const rawCity = String(cityRow[col] || "").trim();
+          if (!rawCity) continue;
+          const type = typeHeader.includes("trp") ? "TRP (card-A)" :
+            (typeHeader.includes("віза") || typeHeader.includes("visa") ? "Віза-D" : "");
+          if (!type) continue;
+
+          const city = rawCity.replace(/\s+/g, " ").trim();
+          if (!proceduresByCity[city]) {
+            proceduresByCity[city] = { "TRP (card-A)": [], "Віза-D": [] };
+          }
+
+          const fields = [];
+          for (let r = 2; r < rows.length; r++) {
+            const label = String(rows[r][0] || "").trim().replace(/:\s*$/, "");
+            const value = String(rows[r][col] || "").trim();
+            if (label && value) fields.push({ label, value });
+          }
+          proceduresByCity[city][type] = fields;
+        }
+
+        if (!Object.keys(proceduresByCity).length) {
+          throw new Error("Не вдалося визначити міста та типи процедур у CSV. Перевір заголовки файлу.");
+        }
+      } catch (error) {
+        proceduresLoadError = error.message || "Помилка завантаження процедур.";
+        console.warn("Процедури оформлення не завантажено:", error);
+      }
+    }
+
+    function richText(value) {
+      const safe = escapeHTML(value);
+      const linked = safe.replace(/(https?:\/\/[^\s<]+)/g, rawUrl => {
+        const url = rawUrl.replace(/[),.;]+$/, "");
+        const trailing = rawUrl.slice(url.length);
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>${trailing}`;
+      });
+      return linked.replace(/\r?\n/g, "<br>");
+    }
+
+    function getProcedureCities(program) {
+      const programCities = String(program.city || "")
+        .split(/\s*\/\s*/)
+        .map(city => city.trim())
+        .filter(Boolean);
+      return programCities.filter(city => Object.keys(proceduresByCity).some(key => normalizeCity(key) === normalizeCity(city)))
+        .map(city => Object.keys(proceduresByCity).find(key => normalizeCity(key) === normalizeCity(city)));
+    }
+
+    function groupProcedureFields(fields) {
+      const groups = [
+        { title: "Місто оформлення", test: label => /місто оформлення/i.test(label) },
+        { title: "Необхідні документи", test: label => /перелік документів/i.test(label) },
+        { title: "Процедура та строки", test: label => /процедура та терміни|дедлайни|етап оформлення/i.test(label) },
+        { title: "Медичне страхування", test: label => /медичне страхування|страхов/i.test(label) },
+        { title: "Житло та гуртожитки", test: label => /гуртожитки|житло|договір з гуртожитком/i.test(label) },
+        { title: "Контакти муніципалітетів", test: label => /контакти муніципалітетів/i.test(label) },
+        { title: "Корисні посилання", test: label => /посилання/i.test(label) }
+      ];
+      const result = groups.map(group => ({ title: group.title, fields: fields.filter(field => group.test(field.label)) }))
+        .filter(group => group.fields.length);
+      const grouped = new Set(result.flatMap(group => group.fields));
+      const other = fields.filter(field => !grouped.has(field));
+      if (other.length) result.unshift({ title: "Інша інформація з таблиці", fields: other });
+      return result;
+    }
+
+    function renderProcedurePanel(program) {
+      if (proceduresLoadError) {
+        return `<section class="procedure-panel"><h3>Оформлення документів і житло</h3>
+          <div class="procedure-note">${escapeHTML(proceduresLoadError)} Перевір, чи файл <b>belgium-procedures.csv</b> розміщений поруч з index.html. Каталог освітніх програм продовжує працювати незалежно.</div></section>`;
+      }
+      const availableCities = getProcedureCities(program);
+      if (!availableCities.length) {
+        return `<section class="procedure-panel"><h3>Оформлення документів і житло</h3>
+          <p class="procedure-intro">Місто навчання: <b>${escapeHTML(program.city || "не вказано")}</b></p>
+          <div class="procedure-note">У файлі процедур немає точного збігу для цього міста. Інформацію з іншого міста не підставлено, щоб не показати менеджеру неправильні умови.</div></section>`;
+      }
+      const firstCity = availableCities[0];
+      const cityOptions = availableCities.map(city => `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`).join("");
+      const methods = ["TRP (card-A)", "Віза-D"];
+      const methodOptions = methods.map(method => `<option value="${escapeHTML(method)}">${escapeHTML(method === "Віза-D" ? "Студентська віза D" : method)}</option>`).join("");
+      return `<section class="procedure-panel" data-procedure-panel>
+        <h3>Оформлення документів і житло</h3>
+        <p class="procedure-intro">Дані підібрано за містом навчання з файлу процедур. Обери напрямок, щоб переглянути відповідні документи, етапи, житло, страхування та контакти.</p>
+        <div class="procedure-controls">
+          <div><label for="procedureCity">Місто навчання</label><select id="procedureCity">${cityOptions}</select></div>
+          <div><label for="procedureType">Тип процедури</label><select id="procedureType">${methodOptions}</select></div>
+        </div>
+        <div id="procedureDetails"></div>
+      </section>`;
+    }
+
+    function updateProcedureDetails() {
+      const citySelect = $("procedureCity");
+      const typeSelect = $("procedureType");
+      const target = $("procedureDetails");
+      if (!citySelect || !typeSelect || !target) return;
+      const city = citySelect.value;
+      const type = typeSelect.value;
+      const fields = (proceduresByCity[city] && proceduresByCity[city][type]) || [];
+      if (!fields.length) {
+        target.innerHTML = '<div class="procedure-note">Для цього міста та типу процедури в таблиці немає заповнених даних.</div>';
+        return;
+      }
+      const groups = groupProcedureFields(fields);
+      target.innerHTML = groups.map(group => `<div class="procedure-group"><h4>${escapeHTML(group.title)}</h4>${group.fields.map(field =>
+        `<div class="procedure-field"><strong>${escapeHTML(field.label)}</strong><div>${richText(field.value)}</div></div>`
+      ).join("")}</div>`).join("");
+    }
+
     async function loadPrograms() {
+      await loadProcedures();
       $("status").className = "status";
       $("status").textContent = "Завантажуємо каталог...";
 
@@ -618,7 +752,7 @@
         }
 
         const csvText = await response.text();
-        const rows = parseCSV(csvText);
+        const rows = parseCSVObjects(csvText);
 
         if (rows.length === 0) {
           throw new Error("CSV-файл порожній або не вдалося прочитати його заголовки.");
@@ -817,8 +951,12 @@
         html = "<p>У таблиці немає додаткової інформації для цього запису.</p>";
       }
 
+      html += renderProcedurePanel(program);
       $("modalBody").innerHTML = html;
       $("detailModal").classList.add("open");
+      updateProcedureDetails();
+      if ($("procedureCity")) $("procedureCity").addEventListener("change", updateProcedureDetails);
+      if ($("procedureType")) $("procedureType").addEventListener("change", updateProcedureDetails);
     }
 
     $("search").addEventListener("input", render);
