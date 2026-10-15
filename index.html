@@ -302,6 +302,38 @@
     .link-list { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
     .link-list a { display:inline-block; padding:10px 13px; border:1px solid var(--brand); border-radius:9px; color:var(--brand); text-decoration:none; font-size:12px; font-weight:700; }
 
+
+    .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .category-card { min-height: 165px; }
+    .category-card.wide { grid-column: 1 / -1; min-height: auto; }
+    .route-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; margin: 18px 0 30px; }
+    .route-card { position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:flex-start; text-align:left; min-height:230px; padding:28px; border:1px solid var(--border); border-radius:18px; background:linear-gradient(135deg,#fff 0%,#fff4f3 100%); cursor:pointer; font:inherit; transition:transform .2s,box-shadow .2s; }
+    .route-card.visa { background:linear-gradient(135deg,#fff 0%,#f1f5ff 100%); }
+    .route-card:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(0,0,0,.08); }
+    .route-card .route-icon { font-size:32px; margin-bottom:16px; }
+    .route-card strong { font-size:21px; margin-bottom:10px; }
+    .route-card span { color:var(--muted); font-size:13px; line-height:1.7; }
+    .route-location { display:inline-block; margin-top:18px; padding:9px 12px; border-radius:999px; background:rgba(255,255,255,.85); color:var(--text)!important; font-weight:700; }
+    .procedure-hero { padding:28px; margin-bottom:26px; border-radius:20px; color:white; background:linear-gradient(110deg,rgba(38,48,65,.88),rgba(119,80,80,.65)),url('https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=1800&q=80') center/cover; }
+    .procedure-hero h2 { margin:0 0 10px; font-size:30px; }
+    .procedure-hero p { max-width:800px; margin:0; line-height:1.8; color:#fff; }
+    .section-kicker { margin:28px 0 12px; font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--brand); }
+    .wide-info-banner { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px 28px; margin-top:20px; border-radius:16px; border:1px solid var(--border); background:linear-gradient(100deg,#fff,#fff4f3); }
+    .wide-info-banner h3 { margin:0 0 8px; font-size:18px; }
+    .wide-info-banner p { margin:0; color:var(--muted); line-height:1.6; font-size:13px; }
+    .info-field a.link-button, .link-list a, a.button-link { display:inline-flex; align-items:center; gap:8px; padding:11px 15px; margin:6px 6px 2px 0; border:1px solid var(--brand); border-radius:10px; background:var(--brand); color:white!important; text-decoration:none; font-size:12px; font-weight:700; overflow-wrap:anywhere; }
+    .info-field a.link-button:hover, .link-list a:hover, a.button-link:hover { filter:brightness(.96); transform:translateY(-1px); }
+    .info-field .text-content { line-height:1.85; white-space:normal; }
+    .route-meta { padding:16px 20px; margin-bottom:18px; border:1px solid #ead4d4; border-radius:14px; background:#fff; line-height:1.7; }
+    .route-meta strong { color:var(--brand); }
+    .back-to-top { position:fixed; right:24px; bottom:24px; z-index:1000; width:52px; height:52px; border:0; border-radius:50%; background:var(--brand); color:white; box-shadow:0 8px 24px rgba(0,0,0,.18); font-size:23px; cursor:pointer; display:none; }
+    .back-to-top.visible { display:block; }
+    .city-photo-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:22px 0 28px; }
+    .city-photo { min-height:115px; display:flex; align-items:flex-end; padding:18px; border-radius:15px; color:#fff; font-weight:800; background:linear-gradient(0deg,rgba(15,23,42,.72),rgba(15,23,42,.05)),url('https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=900&q=75') center/cover; }
+    .city-photo:nth-child(2) { background-image:linear-gradient(0deg,rgba(15,23,42,.72),rgba(15,23,42,.05)),url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=900&q=75'); }
+    .city-photo:nth-child(3) { background-image:linear-gradient(0deg,rgba(15,23,42,.72),rgba(15,23,42,.05)),url('https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=900&q=75'); }
+    @media (max-width: 760px) { .route-grid,.category-grid,.city-photo-strip { grid-template-columns:1fr; } .category-card.wide { grid-column:auto; } .procedure-hero h2 {font-size:24px;} .wide-info-banner {align-items:flex-start; flex-direction:column;} }
+
     @media (max-width: 1000px) {
       .program-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -450,14 +482,35 @@
   </main>
 
   <main id="proceduresPage" class="page-view hidden">
-    <h2 class="section-title">Оформлення документів і переїзд</h2>
-    <p class="section-description">Покрокова інформація про тимчасовий захист, студентську візу, житло, медичне страхування та контакти установ.</p>
+    <section class="procedure-hero">
+      <h2>Навігатор оформлення та переїзду</h2>
+      <p>Оберіть місто навчання, а потім потрібний маршрут. Місце подання документів залежить від процедури: для тимчасового захисту — Брюссель, для студентської візи D — Варшава (перед записом перевірте компетенцію установи).</p>
+    </section>
     <div class="selector-card">
-      <label for="globalProcedureCity">Оберіть місто навчання або проживання</label>
+      <label for="globalProcedureCity">Місто навчання</label>
       <select id="globalProcedureCity"><option value="">Оберіть місто</option></select>
     </div>
-    <div id="procedureCategoryGrid" class="category-grid"></div>
     <div id="globalProcedureMessage" class="procedure-note hidden"></div>
+    <div class="section-kicker">Оберіть маршрут оформлення</div>
+    <div class="route-grid">
+      <button type="button" class="route-card" id="routeProtection">
+        <span class="route-icon">🛂</span><strong>Тимчасовий захист (TRP / IBZ)</strong>
+        <span>Умови отримання довідки IBZ, документи, етапи реєстрації та оформлення карти A.</span>
+        <span class="route-location">Місто оформлення: Брюссель</span>
+      </button>
+      <button type="button" class="route-card visa" id="routeVisa">
+        <span class="route-icon">🎓</span><strong>Студентська віза D</strong>
+        <span>Документи для подання, запис, розгляд заяви та дії після прибуття до Бельгії.</span>
+        <span class="route-location">Місце подання: Варшава, Польща*</span>
+      </button>
+    </div>
+    <div class="section-kicker">Інші розділи</div>
+    <div id="procedureCategoryGrid" class="category-grid"></div>
+    <section class="wide-info-banner">
+      <div><h3>ℹ️ Інша корисна інформація</h3><p>Додаткові умови, примітки та практичні рекомендації для підготовки до переїзду.</p></div>
+      <button type="button" class="button" id="openOtherInfo">Відкрити розділ</button>
+    </section>
+    <p class="subtitle" style="margin-top:16px">* Місце подання потрібно підтвердити для конкретного заявника перед записом.</p>
   </main>
 
   <main id="procedureDetailPage" class="page-view hidden">
@@ -477,6 +530,8 @@
   <footer>
     Cleverly UA · Admissions Compass · Перед поданням документів перевіряйте актуальні вимоги офіційних установ.
   </footer>
+
+  <button type="button" class="back-to-top" id="backToTop" aria-label="Повернутися нагору" title="Нагору">↑</button>
 
   <script>
     "use strict";
@@ -669,11 +724,13 @@
 
     const procedureCategories = {
       protection: { title: "Тимчасовий захист і карта A", icon: "🛂", description: "Умови, документи та кроки оформлення тимчасового захисту.", type: "TRP (card-A)" },
-      visa: { title: "Студентська віза D", icon: "🛃", description: "Підготовка документів, подання заяви та наступні кроки.", type: "Віза-D" },
+      visa: { title: "Студентська віза D", icon: "🎓", description: "Підготовка документів, подання заяви та наступні кроки.", type: "Віза-D" },
       housing: { title: "Житло та гуртожитки", icon: "🏠", description: "Варіанти проживання та порядок оформлення договору." },
-      insurance: { title: "Медичне страхування", icon: "🩺", description: "Відомості про страхування та корисні посилання." },
+      insurance: { title: "Медичне страхування", icon: "🩺", description: "Окремо: страхування для візи D та після тимчасового захисту." },
       contacts: { title: "Контакти установ", icon: "🏛️", description: "Муніципалітети, місця оформлення та важливі контакти." },
-      documents: { title: "Документи та корисні посилання", icon: "📄", description: "Переліки документів, інструкції та офіційні ресурси." },
+      documents: { title: "Документи", icon: "📄", description: "Переліки документів та інструкції." },
+      links: { title: "Важливі посилання", icon: "🔗", description: "Ресурси та сторінки установ для швидкого переходу." },
+      relocation: { title: "Підготовка до переїзду", icon: "🧳", description: "Практичні кроки до виїзду та після прибуття." },
       other: { title: "Інша корисна інформація", icon: "ℹ️", description: "Додаткові умови та примітки для підготовки до переїзду." }
     };
 
@@ -684,37 +741,60 @@
     function allCityFields(city) {
       const merged = [];
       ["TRP (card-A)", "Віза-D"].forEach(type => getFieldsForCity(city, type).forEach(field => {
-        if (!merged.some(item => normalizeCity(item.label) === normalizeCity(field.label) && item.value === field.value)) merged.push(field);
+        if (!merged.some(item => normalizeCity(item.label) === normalizeCity(field.label) && item.value === field.value)) merged.push({...field, routeType:type});
       }));
       return merged;
     }
 
-    function categoryFields(city, categoryKey) {
-      const all = allCityFields(city);
-      if (categoryKey === "protection") return getFieldsForCity(city, "TRP (card-A)").filter(f => !/гуртожитки|житло|договір з гуртожитком|медичне страхування|страхов|контакти муніципалітетів/i.test(f.label));
-      if (categoryKey === "visa") return getFieldsForCity(city, "Віза-D").filter(f => !/гуртожитки|житло|договір з гуртожитком|медичне страхування|страхов|контакти муніципалітетів/i.test(f.label));
-      if (categoryKey === "housing") return all.filter(f => /гуртожитки|житло|договір з гуртожитком/i.test(f.label));
-      if (categoryKey === "insurance") return all.filter(f => /медичне страхування|страхов/i.test(f.label));
-      if (categoryKey === "contacts") return all.filter(f => /контакти муніципалітетів|місто оформлення/i.test(f.label));
-      if (categoryKey === "documents") return all.filter(f => /перелік документів|посилання на інструкцію|важливі посилання|посилання/i.test(f.label));
-      const known = /гуртожитки|житло|договір з гуртожитком|медичне страхування|страхов|контакти муніципалітетів|місто оформлення|перелік документів|посилання на інструкцію|важливі посилання|посилання/i;
-      return all.filter(f => !known.test(f.label));
+    function categoryFields(city, categoryKey, routeType = "") {
+      const routeTypes = routeType ? [routeType] : ["TRP (card-A)", "Віза-D"];
+      const all = [];
+      routeTypes.forEach(type => getFieldsForCity(city, type).forEach(f => all.push({...f, routeType:type})));
+      const isHousing = f => /гуртожитки|житло|договір з гуртожитком/i.test(f.label);
+      const isInsurance = f => /медичне страхування|страхов/i.test(f.label);
+      const isContacts = f => /контакти муніципалітетів|місто оформлення/i.test(f.label);
+      const isDocuments = f => /перелік документів|посилання на інструкцію|важливі посилання|посилання/i.test(f.label);
+      const isRelocation = f => /процедура та терміни|дедлайни|етап оформлення|підготовка до переїзду|після прибуття/i.test(f.label);
+      if (categoryKey === "protection" || categoryKey === "visa") {
+        return all.filter(f => !isHousing(f) && !isInsurance(f) && !isContacts(f) && !isDocuments(f));
+      }
+      if (categoryKey === "housing") return all.filter(isHousing);
+      if (categoryKey === "insurance") return all.filter(isInsurance);
+      if (categoryKey === "contacts") return all.filter(isContacts);
+      if (categoryKey === "documents") return all.filter(f => /перелік документів/i.test(f.label));
+      if (categoryKey === "links") return all.filter(f => /посилання/i.test(f.label));
+      if (categoryKey === "relocation") return all.filter(isRelocation);
+      const known = f => isHousing(f) || isInsurance(f) || isContacts(f) || isDocuments(f) || isRelocation(f);
+      return all.filter(f => !known(f));
     }
 
     function renderFields(fields, heading) {
-      if (!fields.length) return `<div class="procedure-note">Для цього розділу поки немає доступної інформації для обраного міста.</div>`;
-      return `<section class="info-group"><h3>${escapeHTML(heading)}</h3>${fields.map(field =>
-        `<div class="info-field"><strong>${escapeHTML(field.label)}</strong><div>${richText(field.value)}</div></div>`
-      ).join("")}</section>`;
+      if (!fields.length) return `<div class="procedure-note">Для цього розділу поки немає інформації для обраного міста.</div>`;
+      const urlRegex = /https?:\/\/[^\s<>"']+/g;
+      return `<section class="info-group"><h3>${escapeHTML(heading)}</h3>${fields.map(field => {
+        const raw = String(field.value || "");
+        const urls = [...new Set(raw.match(urlRegex) || [])].map(u => u.replace(/[),.;]+$/, ""));
+        let text = escapeHTML(raw);
+        text = text.replace(urlRegex, "");
+        text = text.replace(/\[([^\]]+)\]\(\s*https?:\/\/[^)]+\)/g, "$1");
+        text = text.replace(/\*\*(.*?)\*\*/g, "$1");
+        const textBlock = text.trim() ? `<div class="text-content">${text.replace(/\r?\n/g,"<br>").replace(/(?:<br>\s*){3,}/g,"<br><br>")}</div>` : "";
+        const links = urls.length ? `<div class="link-list">${urls.map((url,i) => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">↗ ${urls.length > 1 ? `Відкрити посилання ${i+1}` : "Відкрити посилання"}</a>`).join("")}</div>` : "";
+        const route = field.routeType ? `<div class="route-meta"><strong>${field.routeType === "TRP (card-A)" ? "Маршрут: тимчасовий захист" : "Маршрут: студентська віза D"}</strong></div>` : "";
+        return `<div class="info-field"><strong>${escapeHTML(field.label)}</strong>${route}${textBlock}${links}</div>`;
+      }).join("")}</section>`;
     }
 
     function renderCategoryCards() {
-      return Object.entries(procedureCategories).map(([key, category]) => `
-        <button type="button" class="category-card" data-category="${key}">
+      const keys = ["housing", "insurance", "contacts", "documents", "links", "relocation"];
+      return keys.map(key => {
+        const category = procedureCategories[key];
+        return `<button type="button" class="category-card" data-category="${key}">
           <span class="category-icon" aria-hidden="true">${category.icon}</span>
           <strong>${escapeHTML(category.title)}</strong>
           <span>${escapeHTML(category.description)}</span>
-        </button>`).join("");
+        </button>`;
+      }).join("");
     }
 
     function showView(viewId) {
@@ -735,8 +815,11 @@
     let activeProcedureCategory = "protection";
     let activeProcedureCity = "";
 
-    function openProcedureCategory(categoryKey, city = "") {
+    let activeProcedureRoute = "";
+
+    function openProcedureCategory(categoryKey, city = "", routeType = "") {
       activeProcedureCategory = categoryKey;
+      activeProcedureRoute = routeType || (categoryKey === "protection" ? "TRP (card-A)" : categoryKey === "visa" ? "Віза-D" : "");
       activeProcedureCity = city || $("globalProcedureCity").value || Object.keys(proceduresByCity)[0] || "";
       const category = procedureCategories[categoryKey] || procedureCategories.other;
       $("procedureDetailEyebrow").textContent = "Бельгія · Admissions Compass";
@@ -761,8 +844,20 @@
         content.innerHTML = '<div class="procedure-note">Оберіть місто, щоб переглянути інформацію.</div>';
         return;
       }
-      const fields = categoryFields(city, activeProcedureCategory);
-      content.innerHTML = `<div class="content-section"><h3>${escapeHTML(category.title)} · ${escapeHTML(city)}</h3><p class="procedure-intro">Інформація подана окремими блоками для зручної роботи менеджера.</p></div>${renderFields(fields, category.title)}`;
+      const routeType = activeProcedureRoute;
+      const fields = categoryFields(city, activeProcedureCategory, routeType);
+      const routeName = routeType === "TRP (card-A)" ? "Тимчасовий захист (TRP / IBZ)" : routeType === "Віза-D" ? "Студентська віза D" : "";
+      const processingCityFields = routeType ? getFieldsForCity(city, routeType).filter(f => /місто оформлення/i.test(f.label)) : [];
+      let processingCity = processingCityFields.map(f => f.value).filter(Boolean).join(" ");
+      if (routeType === "Віза-D" && processingCity) {
+        const match = processingCity.match(/Варшава,\s*Польща/i);
+        processingCity = match ? "Варшава, Польща" : processingCity.split(/[—–-]/)[0].trim();
+      } else if (routeType === "TRP (card-A)" && processingCity) {
+        const match = processingCity.match(/Брюссель/i);
+        processingCity = match ? "Брюссель" : processingCity;
+      }
+      const routeIntro = routeName ? `<div class="route-meta"><strong>${escapeHTML(routeName)}</strong><br>Місто навчання: ${escapeHTML(city)}${processingCity ? `<br>Місто оформлення / подання: ${escapeHTML(processingCity)}` : ""}</div>` : "";
+      content.innerHTML = `${routeIntro}${renderFields(fields, category.title)}`;
     }
 
     function openProgramPage(program) {
@@ -782,7 +877,7 @@
         ${program.source ? `<a class="button secondary" href="${escapeHTML(program.source)}" target="_blank" rel="noopener noreferrer">Відкрити сторінку програми</a>` : ""}</section>
         ${detail.length ? `<section class="content-section"><h3>Умови вступу</h3>${detail.map(([label,value]) => `<div class="detail-row"><strong>${escapeHTML(label)}</strong><div>${richText(value)}</div></div>`).join("")}</section>` : ""}
         <section class="content-section"><h3>Оформлення та переїзд</h3><p class="procedure-intro">Оберіть потрібний розділ, щоб відкрити окрему сторінку з детальною інформацією. Місто можна змінити на наступному екрані.</p><div class="category-grid">${categoryButtons}</div></section>`;
-      $("programPageContent").querySelectorAll("[data-program-category]").forEach(button => button.addEventListener("click", () => openProcedureCategory(button.dataset.programCategory, button.dataset.city)));
+      $("programPageContent").querySelectorAll("[data-program-category]").forEach(button => button.addEventListener("click", () => openProcedureCategory(button.dataset.programCategory, button.dataset.city, button.dataset.programCategory === "protection" ? "TRP (card-A)" : button.dataset.programCategory === "visa" ? "Віза-D" : "")));
       showView("programPage");
     }
 
@@ -790,14 +885,32 @@
       fillCitySelect($("globalProcedureCity"));
       $("procedureCategoryGrid").innerHTML = renderCategoryCards();
       $("procedureCategoryGrid").querySelectorAll("[data-category]").forEach(button => button.addEventListener("click", () => {
-        if (!$ ("globalProcedureCity").value) {
-          $("globalProcedureMessage").textContent = "Спочатку оберіть місто.";
+        const city = $("globalProcedureCity").value;
+        if (!city) {
+          $("globalProcedureMessage").textContent = "Спочатку оберіть місто навчання.";
           $("globalProcedureMessage").classList.remove("hidden");
           return;
         }
         $("globalProcedureMessage").classList.add("hidden");
-        openProcedureCategory(button.dataset.category, $("globalProcedureCity").value);
+        openProcedureCategory(button.dataset.category, city);
       }));
+      $("routeProtection").addEventListener("click", () => {
+        const city = $("globalProcedureCity").value;
+        if (!city) { $("globalProcedureMessage").textContent = "Спочатку оберіть місто навчання."; $("globalProcedureMessage").classList.remove("hidden"); return; }
+        $("globalProcedureMessage").classList.add("hidden");
+        openProcedureCategory("protection", city, "TRP (card-A)");
+      });
+      $("routeVisa").addEventListener("click", () => {
+        const city = $("globalProcedureCity").value;
+        if (!city) { $("globalProcedureMessage").textContent = "Спочатку оберіть місто навчання."; $("globalProcedureMessage").classList.remove("hidden"); return; }
+        $("globalProcedureMessage").classList.add("hidden");
+        openProcedureCategory("visa", city, "Віза-D");
+      });
+      $("openOtherInfo").addEventListener("click", () => {
+        const city = $("globalProcedureCity").value;
+        if (!city) { $("globalProcedureMessage").textContent = "Спочатку оберіть місто навчання."; $("globalProcedureMessage").classList.remove("hidden"); return; }
+        openProcedureCategory("other", city);
+      });
     }
 
     async function loadPrograms() {
@@ -979,6 +1092,10 @@
     $("backToProcedures").addEventListener("click", () => showView("proceduresPage"));
     $("detailProcedureCity").addEventListener("change", renderProcedureDetail);
     $("globalProcedureCity").addEventListener("change", () => $("globalProcedureMessage").classList.add("hidden"));
+
+    const backToTopButton = $("backToTop");
+    window.addEventListener("scroll", () => backToTopButton.classList.toggle("visible", window.scrollY > 350));
+    backToTopButton.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
     async function initializeApp() {
       await loadPrograms();
