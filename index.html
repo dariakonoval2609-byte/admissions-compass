@@ -757,6 +757,16 @@
       if (!loadedFiles && !proceduresLoadError) {
         proceduresLoadError = "Не знайдено файлів із даними оформлення.";
       }
+
+      // Завантаження CSV асинхронне. Після завершення повторно заповнюємо список міст,
+      // інакше форма, створена раніше, залишається лише з пунктом «Оберіть місто».
+      const countrySelect = $("globalProcedureCountry");
+      const citySelect = $("globalProcedureCity");
+      if (countrySelect && citySelect) {
+        fillCitySelect(citySelect, citySelect.value, countrySelect.value);
+        if (!citySelect.value && citySelect.options.length > 1) citySelect.selectedIndex = 1;
+        if (typeof renderGlobalProcedureMessage === "function") renderGlobalProcedureMessage();
+      }
     }
 
     function richText(value) {
