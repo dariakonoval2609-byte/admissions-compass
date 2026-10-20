@@ -100,7 +100,7 @@
 
     .filters {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 14px;
       margin-bottom: 22px;
     }
@@ -443,6 +443,10 @@
         aria-label="Пошук"
       >
 
+      <select id="countryFilter" aria-label="Фільтр за країною">
+        <option value="">Усі країни</option>
+      </select>
+
       <select id="universityFilter" aria-label="Фільтр за університетом">
         <option value="">Усі університети</option>
       </select>
@@ -459,8 +463,8 @@
       </div>
 
       <div class="stat">
-        <strong>Бельгія</strong>
-        <span>Країна навчання</span>
+        <strong id="countrySummary">—</strong>
+        <span>Країни в каталозі</span>
       </div>
     </div>
 
@@ -484,7 +488,7 @@
   <main id="proceduresPage" class="page-view hidden">
     <section class="procedure-hero">
       <h2>Навігатор оформлення та переїзду</h2>
-      <p>Оберіть місто навчання, а потім потрібний маршрут. Місце подання документів залежить від процедури: для тимчасового захисту — Брюссель, для студентської візи D — Варшава (перед записом перевірте компетенцію установи).</p>
+      <p>Оберіть місто навчання, а потім потрібний маршрут. Вимоги, установи та місце подання залежать від країни й статусу заявника. Перед поданням документів перевіряйте актуальні офіційні інструкції.</p>
     </section>
     <div class="selector-card">
       <label for="globalProcedureCity">Місто навчання</label>
@@ -496,12 +500,12 @@
       <button type="button" class="route-card" id="routeProtection">
         <span class="route-icon">🛂</span><strong>Тимчасовий захист (TRP / IBZ)</strong>
         <span>Умови отримання довідки IBZ, документи, етапи реєстрації та оформлення карти A.</span>
-        <span class="route-location">Місто оформлення: Брюссель</span>
+        <span class="route-location">Місце оформлення залежить від країни та статусу</span>
       </button>
       <button type="button" class="route-card visa" id="routeVisa">
         <span class="route-icon">🎓</span><strong>Студентська віза D</strong>
         <span>Документи для подання, запис, розгляд заяви та дії після прибуття до Бельгії.</span>
-        <span class="route-location">Місце подання: Варшава, Польща*</span>
+        <span class="route-location">Місце подання залежить від країни та типу заяви</span>
       </button>
     </div>
     <div class="section-kicker">Інші розділи</div>
@@ -510,7 +514,7 @@
       <div><h3>ℹ️ Інша корисна інформація</h3><p>Додаткові умови, примітки та практичні рекомендації для підготовки до переїзду.</p></div>
       <button type="button" class="button" id="openOtherInfo">Відкрити розділ</button>
     </section>
-    <p class="subtitle" style="margin-top:16px">* Місце подання потрібно підтвердити для конкретного заявника перед записом.</p>
+    <p class="subtitle" style="margin-top:16px">Перед записом перевірте компетентну установу для конкретного заявника.</p>
   </main>
 
   <main id="procedureDetailPage" class="page-view hidden">
@@ -538,6 +542,7 @@
 
     let programs = [];
     let proceduresByCity = {};
+    let procedureCountryByCity = {};
     let proceduresLoadError = "";
 
     const $ = id => document.getElementById(id);
@@ -665,45 +670,79 @@
 
     async function loadProcedures() {
       proceduresByCity = {};
+      procedureCountryByCity = {};
       proceduresLoadError = "";
-      try {
-        const response = await fetch("./belgium-procedures.csv", { cache: "no-store" });
-        if (!response.ok) throw new Error("Не вдалося завантажити інформацію (HTTP " + response.status + ").");
-        const rows = parseCSVRows(await response.text());
-        if (rows.length < 3) throw new Error("Дані оформлення відсутні або мають неправильний формат.");
 
-        // У файлі перший рядок задає тип маршруту, другий — місто навчання.
-        // Кожна пара колонок відповідає одному місту: TRP (card-A), потім Віза-D.
-        const procedureHeaders = rows[0] || [];
-        const cityRow = rows[1] || [];
-        for (let col = 1; col < Math.max(procedureHeaders.length, cityRow.length); col++) {
-          const typeHeader = String(procedureHeaders[col] || "").trim().toLocaleLowerCase("uk");
-          const rawCity = String(cityRow[col] || "").replace(/\s+/g, " ").trim();
-          if (!rawCity) continue;
-          const type = typeHeader.includes("trp") ? "TRP (card-A)" :
-            (typeHeader.includes("віза") || typeHeader.includes("visa") ? "Віза-D" : "");
-          if (!type) continue;
+      const sources = [
+        { file: "./belgium-procedures.csv", country: "Бельгія", required: true },
+        { file: "./germany-procedures.csv", country: "Німеччина", required: false }
+      ];
+      let loadedFiles = 0;
 
-          const city = rawCity;
-          if (!proceduresByCity[city]) {
-            proceduresByCity[city] = { "TRP (card-A)": [], "Віза-D": [] };
+      for (const source of sources) {
+        try {
+          const response = await fetch(source.file, { cache: "no-store" });
+          if (!response.ok) {
+            if (source.required) {
+              throw new Error("Не вдалося завантажити файл " + source.file + " (HTTP " + response.status + ").");
+            }
+            continue;
           }
 
-          const fields = [];
-          for (let r = 2; r < rows.length; r++) {
-            const label = String(rows[r][0] || "").trim().replace(/:\s*$/, "");
-            const value = String(rows[r][col] || "").trim();
-            if (label && value) fields.push({ label, value, rowIndex: r });
+          const rows = parseCSVRows(await response.text());
+          if (rows.length < 3) {
+            if (source.required) throw new Error("Файл " + source.file + " порожній або має неправильний формат.");
+            console.warn("Файл процедур Німеччини поки не заповнений.");
+            continue;
           }
-          proceduresByCity[city][type] = fields;
-        }
 
-        if (!Object.keys(proceduresByCity).length) {
-          throw new Error("Не вдалося визначити міста та типи процедур. Перевірте формат даних.");
+          // Формат: перший рядок — тип процедури, другий — місто;
+          // наступні рядки містять назви полів та інформацію для кожного маршруту.
+          const procedureHeaders = rows[0] || [];
+          const cityRow = rows[1] || [];
+          let foundInFile = false;
+
+          for (let col = 1; col < Math.max(procedureHeaders.length, cityRow.length); col++) {
+            const typeHeader = String(procedureHeaders[col] || "").trim().toLocaleLowerCase("uk");
+            const rawCity = String(cityRow[col] || "").replace(/\s+/g, " ").trim();
+            if (!rawCity) continue;
+
+            const type = typeHeader.includes("trp") || typeHeader.includes("тимчас")
+              ? "TRP (card-A)"
+              : (typeHeader.includes("віза") || typeHeader.includes("visa") ? "Віза-D" : "");
+            if (!type) continue;
+
+            const city = rawCity;
+            if (!proceduresByCity[city]) {
+              proceduresByCity[city] = { "TRP (card-A)": [], "Віза-D": [] };
+            }
+
+            const fields = [];
+            for (let r = 2; r < rows.length; r++) {
+              const label = String(rows[r][0] || "").trim().replace(/:\s*$/, "");
+              const value = String(rows[r][col] || "").trim();
+              if (label && value) fields.push({ label, value, rowIndex: r });
+            }
+
+            proceduresByCity[city][type] = fields;
+            procedureCountryByCity[city] = source.country;
+            foundInFile = true;
+          }
+
+          if (foundInFile) loadedFiles++;
+          else if (source.required) throw new Error("Не вдалося визначити міста та типи процедур у " + source.file + ".");
+        } catch (error) {
+          if (source.required) {
+            proceduresLoadError = error.message || "Помилка завантаження процедур.";
+            console.warn("Процедури оформлення не завантажено:", error);
+          } else {
+            console.warn("Дані оформлення Німеччини не завантажено:", error);
+          }
         }
-      } catch (error) {
-        proceduresLoadError = error.message || "Помилка завантаження процедур.";
-        console.warn("Процедури оформлення не завантажено:", error);
+      }
+
+      if (!loadedFiles && !proceduresLoadError) {
+        proceduresLoadError = "Не знайдено файлів із даними оформлення.";
       }
     }
 
@@ -764,8 +803,10 @@
           String(other.value || "").trim() === String(field.value || "").trim();
       }) === index).sort((a, b) => a.rowIndex - b.rowIndex);
 
-      const isHousing = f => /гуртожитки|житло|договір з гуртожитком/i.test(f.label);
-      const isInsurance = f => /медичне страхування|страхов/i.test(f.label);
+      // Розподіл за категоріями: враховуємо також історичну помилку в назві
+      // «стархові компанії», щоб ці посилання не потрапляли до «Іншої корисної інформації».
+      const isHousing = f => /гуртожитк|житло|договір.{0,50}гуртожитком|процедура оформлення договору з гуртожитком/i.test(String(f.label || ""));
+      const isInsurance = f => /медичн.{0,30}страхув|страхув|страхов|стархов/i.test(String(f.label || ""));
       const isContacts = f => /контакти муніципалітетів|місто оформлення/i.test(f.label);
       const isBorderInstruction = f => /посилання на інструкцію з отримання довідки/i.test(f.label);
       const isDocuments = f => /перелік документів/i.test(f.label);
@@ -784,7 +825,7 @@
             return order(a) - order(b) || a.rowIndex - b.rowIndex;
           });
       }
-      if (categoryKey === "housing") return unique.filter(f => isHousing(f) || /процедура оформлення договору з гуртожитком/i.test(f.label));
+      if (categoryKey === "housing") return unique.filter(isHousing);
       if (categoryKey === "insurance") return unique.filter(isInsurance);
       if (categoryKey === "contacts") return unique.filter(isContacts);
       if (categoryKey === "documents") return unique.filter(f => isDocuments(f) || isBorderInstruction(f));
@@ -888,7 +929,7 @@
       activeProcedureRoute = routeType || (categoryKey === "protection" ? "TRP (card-A)" : categoryKey === "visa" ? "Віза-D" : "");
       activeProcedureCity = city || $("globalProcedureCity").value || Object.keys(proceduresByCity)[0] || "";
       const category = procedureCategories[categoryKey] || procedureCategories.other;
-      $("procedureDetailEyebrow").textContent = "Бельгія · Admissions Compass";
+      $("procedureDetailEyebrow").textContent = (procedureCountryByCity[activeProcedureCity] || "Admissions Compass") + " · Admissions Compass";
       $("procedureDetailTitle").textContent = category.title;
       $("procedureDetailDescription").textContent = category.description;
       fillCitySelect($("detailProcedureCity"), activeProcedureCity);
@@ -913,15 +954,10 @@
       const routeType = activeProcedureRoute;
       const fields = categoryFields(city, activeProcedureCategory, routeType);
       const routeName = routeType === "TRP (card-A)" ? "Тимчасовий захист (TRP / IBZ)" : routeType === "Віза-D" ? "Студентська віза D" : "";
-      const processingCityFields = routeType ? getFieldsForCity(city, routeType).filter(f => /місто оформлення/i.test(f.label)) : [];
-      let processingCity = processingCityFields.map(f => f.value).filter(Boolean).join(" ");
-      if (routeType === "Віза-D" && processingCity) {
-        const match = processingCity.match(/Варшава,\s*Польща/i);
-        processingCity = match ? "Варшава, Польща" : processingCity.split(/[—–-]/)[0].trim();
-      } else if (routeType === "TRP (card-A)" && processingCity) {
-        const match = processingCity.match(/Брюссель/i);
-        processingCity = match ? "Брюссель" : processingCity;
-      }
+      const processingCityFields = routeType
+        ? getFieldsForCity(city, routeType).filter(f => /місто оформлення|місце подання|місто подання/i.test(f.label))
+        : [];
+      const processingCity = processingCityFields.map(f => f.value).filter(Boolean).join(" ");
       const routeIntro = routeName ? `<div class="route-meta"><strong>${escapeHTML(routeName)}</strong><br>Місто навчання: ${escapeHTML(city)}${processingCity ? `<br>Місто оформлення / подання: ${escapeHTML(processingCity)}` : ""}</div>` : "";
       content.innerHTML = `${routeIntro}${renderFields(fields, category.title)}`;
     }
@@ -936,13 +972,17 @@
       const summary = fields.filter(([label,value]) => value && !["Вимоги до вступу","Необхідні документи","Засвідчення документів","Комісія за розгляд заявки"].includes(label));
       const detail = fields.filter(([label,value]) => value && ["Вимоги до вступу","Необхідні документи","Засвідчення документів","Комісія за розгляд заявки"].includes(label));
       const cities = getProcedureCities(program);
+      const isGermany = /німеччин/i.test(program.country || "");
       const categoryButtons = Object.entries(procedureCategories).map(([key,cat]) => `<button type="button" class="category-card" data-program-category="${key}" data-city="${escapeHTML(cities[0] || "")}"><span class="category-icon">${cat.icon}</span><strong>${escapeHTML(cat.title)}</strong><span>${escapeHTML(cat.description)}</span></button>`).join("");
+      const procedureSection = isGermany && !cities.length
+        ? `<section class="content-section"><h3>Оформлення та переїзд у Німеччині</h3><div class="procedure-note">Дані з вкладки «УВ Німеччина» ще не підключені до застосунку. Після експорту цієї вкладки у файл <b>germany-procedures.csv</b> тут з’являться відповідні інструкції. Інформація про Бельгію не підставляється замість німецької.</div></section>`
+        : `<section class="content-section"><h3>Оформлення та переїзд</h3><p class="procedure-intro">Оберіть потрібний розділ, щоб відкрити детальну інформацію. Місто можна змінити на наступному екрані.</p><div class="category-grid">${categoryButtons}</div></section>`;
       $("programPageContent").innerHTML = `
         <section class="program-page-heading"><div class="eyebrow">Освітня програма</div><h2>${escapeHTML(program.university || "Університет")}</h2><p class="card-program">${escapeHTML(program.program || "Спеціальність не вказана")}</p>
         <div class="program-summary-grid">${summary.map(([label,value]) => `<div class="summary-item"><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join("")}</div>
         ${program.source ? `<a class="button secondary" href="${escapeHTML(program.source)}" target="_blank" rel="noopener noreferrer">Відкрити сторінку програми</a>` : ""}</section>
         ${detail.length ? `<section class="content-section"><h3>Умови вступу</h3>${detail.map(([label,value]) => `<div class="detail-row"><strong>${escapeHTML(label)}</strong><div>${richText(value)}</div></div>`).join("")}</section>` : ""}
-        <section class="content-section"><h3>Оформлення та переїзд</h3><p class="procedure-intro">Оберіть потрібний розділ, щоб відкрити окрему сторінку з детальною інформацією. Місто можна змінити на наступному екрані.</p><div class="category-grid">${categoryButtons}</div></section>`;
+        ${procedureSection}`;
       $("programPageContent").querySelectorAll("[data-program-category]").forEach(button => button.addEventListener("click", () => openProcedureCategory(button.dataset.programCategory, button.dataset.city, button.dataset.programCategory === "protection" ? "TRP (card-A)" : button.dataset.programCategory === "visa" ? "Віза-D" : "")));
       showView("programPage");
     }
@@ -985,37 +1025,42 @@
       $("status").textContent = "Завантажуємо каталог...";
 
       try {
-        const response = await fetch("./admissions.csv", {
-          cache: "no-store"
-        });
+        const dataFiles = ["./admissions.csv", "./germany-admissions.csv"];
+        const allRows = [];
+        const fileErrors = [];
 
-        if (!response.ok) {
-          throw new Error(
-            "CSV не знайдено. Код відповіді: " + response.status
-          );
+        for (const file of dataFiles) {
+          try {
+            const response = await fetch(file, { cache: "no-store" });
+            if (!response.ok) {
+              if (file === "./admissions.csv") {
+                throw new Error("Основний файл admissions.csv не знайдено (HTTP " + response.status + ").");
+              }
+              fileErrors.push("Не знайдено " + file);
+              continue;
+            }
+            const parsed = parseCSVObjects(await response.text());
+            allRows.push(...parsed);
+          } catch (error) {
+            if (file === "./admissions.csv") throw error;
+            fileErrors.push(error.message || ("Не вдалося завантажити " + file));
+          }
         }
 
-        const csvText = await response.text();
-        const rows = parseCSVObjects(csvText);
-
-        if (rows.length === 0) {
-          throw new Error("CSV-файл порожній або не вдалося прочитати його заголовки.");
-        }
-
-        programs = rows
+        programs = allRows
           .map(getProgram)
           .filter(program => program.university || program.program);
 
         if (programs.length === 0) {
-          throw new Error(
-            "Файл прочитано, але не знайдено стовпців «Університет» або «Підкластер»."
-          );
+          throw new Error("Не знайдено жодної освітньої програми у CSV-файлах.");
         }
 
         initFilters();
         render();
 
-        $("status").textContent = "";
+        $("status").textContent = fileErrors.length
+          ? "Каталог завантажено частково. Перевір файли: " + fileErrors.join("; ")
+          : "";
         $("status").className = "status";
       } catch (error) {
         console.error("Помилка завантаження каталогу:", error);
@@ -1027,16 +1072,19 @@
 
         $("programGrid").innerHTML = `
           <div class="empty">
-            Перевір, чи файл <b>admissions.csv</b> лежить у корені репозиторію
-            поруч з index.html.
-            <br><br>
-            Після виправлення онови сторінку клавішами Ctrl + F5.
+            Перевір, чи файл <b>admissions.csv</b> лежить у корені репозиторію поруч з index.html.
+            <br>Для Німеччини додай також <b>germany-admissions.csv</b>.
+            <br><br>Після виправлення онови сторінку клавішами Ctrl + F5.
           </div>
         `;
       }
     }
 
     function initFilters() {
+      const countries = [...new Set(
+        programs.map(program => program.country).filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b, "uk"));
+
       const universities = [...new Set(
         programs.map(program => program.university).filter(Boolean)
       )].sort((a, b) => a.localeCompare(b, "uk"));
@@ -1044,6 +1092,12 @@
       const cities = [...new Set(
         programs.map(program => program.city).filter(Boolean)
       )].sort((a, b) => a.localeCompare(b, "uk"));
+
+      $("countryFilter").innerHTML =
+        '<option value="">Усі країни</option>' +
+        countries.map(country =>
+          `<option value="${escapeHTML(country)}">${escapeHTML(country)}</option>`
+        ).join("");
 
       $("universityFilter").innerHTML =
         '<option value="">Усі університети</option>' +
@@ -1056,10 +1110,13 @@
         cities.map(city =>
           `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`
         ).join("");
+
+      $("countrySummary").textContent = countries.length ? countries.join(" · ") : "—";
     }
 
     function render() {
       const search = $("search").value.trim().toLowerCase();
+      const selectedCountry = $("countryFilter").value;
       const selectedUniversity = $("universityFilter").value;
       const selectedCity = $("cityFilter").value;
 
@@ -1076,6 +1133,7 @@
 
         return (
           (!search || searchable.includes(search)) &&
+          (!selectedCountry || program.country === selectedCountry) &&
           (!selectedUniversity ||
             program.university === selectedUniversity) &&
           (!selectedCity || program.city === selectedCity)
@@ -1097,7 +1155,7 @@
       $("programGrid").innerHTML = filtered.map((program, index) => `
         <article class="card">
           <span class="card-label">
-            ${escapeHTML(program.city || "Бельгія")}
+            ${escapeHTML((program.city || "Місто не вказано") + (program.country ? " · " + program.country : ""))}
           </span>
 
           <h3>${escapeHTML(program.university || "Університет")}</h3>
@@ -1150,6 +1208,7 @@
     }
 
     $("search").addEventListener("input", render);
+    $("countryFilter").addEventListener("change", render);
     $("universityFilter").addEventListener("change", render);
     $("cityFilter").addEventListener("change", render);
     $("navCatalog").addEventListener("click", () => showView("catalogPage"));
