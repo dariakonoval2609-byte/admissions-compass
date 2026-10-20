@@ -491,7 +491,9 @@
       <p>Оберіть місто навчання, а потім потрібний маршрут. Вимоги, установи та місце подання залежать від країни й статусу заявника. Перед поданням документів перевіряйте актуальні офіційні інструкції.</p>
     </section>
     <div class="selector-card">
-      <label for="globalProcedureCity">Місто навчання</label>
+      <label for="globalProcedureCountry">Країна</label>
+      <select id="globalProcedureCountry"><option value="Бельгія">Бельгія</option><option value="Німеччина">Німеччина</option></select>
+      <label for="globalProcedureCity" style="margin-top:14px">Місто навчання</label>
       <select id="globalProcedureCity"><option value="">Оберіть місто</option></select>
     </div>
     <div id="globalProcedureMessage" class="procedure-note hidden"></div>
@@ -504,7 +506,7 @@
       </button>
       <button type="button" class="route-card visa" id="routeVisa">
         <span class="route-icon">🎓</span><strong>Студентська віза D</strong>
-        <span>Документи для подання, запис, розгляд заяви та дії після прибуття до Бельгії.</span>
+        <span>Документи для подання, запис, розгляд заяви та дії після прибуття до країни навчання.</span>
         <span class="route-location">Місце подання залежить від країни та типу заяви</span>
       </button>
     </div>
@@ -706,10 +708,10 @@
             continue;
           }
 
-          // Формат: перший рядок — тип процедури, другий — місто;
-          // наступні рядки містять назви полів та інформацію для кожного маршруту.
+          // У Бельгії міста в другому рядку, у Німеччині — в рядку «Для навчання в місті:».
           const procedureHeaders = rows[0] || [];
-          const cityRow = rows[1] || [];
+          const cityLabelIndex = rows.findIndex(row => /для навчання в місті|місто навчання/i.test(String(row[0] || "").trim()));
+          const cityRow = cityLabelIndex >= 0 ? rows[cityLabelIndex] : (rows[1] || []);
           let foundInFile = false;
 
           for (let col = 1; col < Math.max(procedureHeaders.length, cityRow.length); col++) {
@@ -728,7 +730,8 @@
             }
 
             const fields = [];
-            for (let r = 2; r < rows.length; r++) {
+            for (let r = 1; r < rows.length; r++) {
+              if (r === cityLabelIndex) continue;
               const label = String(rows[r][0] || "").trim().replace(/:\s*$/, "");
               const value = String(rows[r][col] || "").trim();
               if (label && value) fields.push({ label, value, rowIndex: r });
@@ -921,9 +924,12 @@
       window.scrollTo({ top: 0, behavior: "instant" });
     }
 
-    function fillCitySelect(select, preferredCity = "") {
+    function fillCitySelect(select, preferredCity = "", preferredCountry = "") {
       if (!select) return;
-      const cities = Object.keys(proceduresByCity).sort((a,b) => a.localeCompare(b, "uk"));
+      const country = preferredCountry || $("globalProcedureCountry")?.value || "";
+      const cities = Object.keys(proceduresByCity)
+        .filter(city => !country || procedureCountryByCity[city] === country)
+        .sort((a,b) => a.localeCompare(b, "uk"));
       select.innerHTML = '<option value="">Оберіть місто</option>' + cities.map(city => `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`).join("");
       const match = cities.find(city => normalizeCity(city) === normalizeCity(preferredCity));
       if (match) select.value = match;
@@ -937,12 +943,14 @@
     function openProcedureCategory(categoryKey, city = "", routeType = "") {
       activeProcedureCategory = categoryKey;
       activeProcedureRoute = routeType || (categoryKey === "protection" ? "TRP (card-A)" : categoryKey === "visa" ? "Віза-D" : "");
-      activeProcedureCity = city || $("globalProcedureCity").value || Object.keys(proceduresByCity)[0] || "";
+      activeProcedureCity = city || $("globalProcedureCity").value || "";
+      const selectedCountry = procedureCountryByCity[activeProcedureCity] || $("globalProcedureCountry")?.value || "Бельгія";
+      $("globalProcedureCountry").value = selectedCountry;
       const category = procedureCategories[categoryKey] || procedureCategories.other;
       $("procedureDetailEyebrow").textContent = (procedureCountryByCity[activeProcedureCity] || "Admissions Compass") + " · Admissions Compass";
       $("procedureDetailTitle").textContent = category.title;
       $("procedureDetailDescription").textContent = category.description;
-      fillCitySelect($("detailProcedureCity"), activeProcedureCity);
+      fillCitySelect($("detailProcedureCity"), activeProcedureCity, selectedCountry);
       activeProcedureCity = $("detailProcedureCity").value;
       renderProcedureDetail();
       showView("procedureDetailPage");
@@ -985,7 +993,7 @@
       const isGermany = /німеччин/i.test(program.country || "");
       const categoryButtons = Object.entries(procedureCategories).map(([key,cat]) => `<button type="button" class="category-card" data-program-category="${key}" data-city="${escapeHTML(cities[0] || "")}"><span class="category-icon">${cat.icon}</span><strong>${escapeHTML(cat.title)}</strong><span>${escapeHTML(cat.description)}</span></button>`).join("");
       const procedureSection = isGermany && !cities.length
-        ? `<section class="content-section"><h3>Оформлення та переїзд у Німеччині</h3><div class="procedure-note">Дані з вкладки «УВ Німеччина» ще не підключені до застосунку. Після експорту цієї вкладки у файл <b>germany-procedures.csv</b> тут з’являться відповідні інструкції. Інформація про Бельгію не підставляється замість німецької.</div></section>`
+        ? `<section class="content-section"><h3>Оформлення та переїзд у Німеччині</h3><div class="procedure-note">Оберіть країну та місто навчання, щоб переглянути доступні інструкції. Якщо дані для окремого міста ще не заповнені, перевірте інформацію за офіційними джерелами.</div></section>`
         : `<section class="content-section"><h3>Оформлення та переїзд</h3><p class="procedure-intro">Оберіть потрібний розділ, щоб відкрити детальну інформацію. Місто можна змінити на наступному екрані.</p><div class="category-grid">${categoryButtons}</div></section>`;
       $("programPageContent").innerHTML = `
         <section class="program-page-heading"><div class="eyebrow">Освітня програма</div><h2>${escapeHTML(program.university || "Університет")}</h2><p class="card-program">${escapeHTML(program.program || "Спеціальність не вказана")}</p>
@@ -998,7 +1006,8 @@
     }
 
     function initProcedureNavigation() {
-      fillCitySelect($("globalProcedureCity"));
+      fillCitySelect($("globalProcedureCity"), "", $("globalProcedureCountry").value);
+      if (!$("globalProcedureCity").value && $("globalProcedureCity").options.length > 1) $("globalProcedureCity").selectedIndex = 1;
       $("procedureCategoryGrid").innerHTML = renderCategoryCards();
       $("procedureCategoryGrid").querySelectorAll("[data-category]").forEach(button => button.addEventListener("click", () => {
         const city = $("globalProcedureCity").value;
@@ -1245,6 +1254,11 @@
     $("backToCatalog").addEventListener("click", () => showView("catalogPage"));
     $("backToProcedures").addEventListener("click", () => showView("proceduresPage"));
     $("detailProcedureCity").addEventListener("change", renderProcedureDetail);
+    $("globalProcedureCountry").addEventListener("change", () => {
+      fillCitySelect($("globalProcedureCity"), "", $("globalProcedureCountry").value);
+      if ($("globalProcedureCity").options.length > 1) $("globalProcedureCity").selectedIndex = 1;
+      $("globalProcedureMessage").classList.add("hidden");
+    });
     $("globalProcedureCity").addEventListener("change", () => $("globalProcedureMessage").classList.add("hidden"));
 
     const backToTopButton = $("backToTop");
