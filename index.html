@@ -668,6 +668,16 @@
       return String(value || "").trim().toLocaleLowerCase("uk");
     }
 
+    async function fetchWithTimeout(url, timeoutMs = 12000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        return await fetch(url, { cache: "no-store", signal: controller.signal });
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
     async function loadProcedures() {
       proceduresByCity = {};
       procedureCountryByCity = {};
@@ -681,7 +691,7 @@
 
       for (const source of sources) {
         try {
-          const response = await fetch(source.file, { cache: "no-store" });
+          const response = await fetchWithTimeout(source.file);
           if (!response.ok) {
             if (source.required) {
               throw new Error("Не вдалося завантажити файл " + source.file + " (HTTP " + response.status + ").");
@@ -1020,7 +1030,9 @@
     }
 
     async function loadPrograms() {
-      await loadProcedures();
+      // Каталог завантажується незалежно від процедур, щоб помилка файлу процедур
+      // не блокувала появу університетів і програм.
+      loadProcedures().catch(error => console.warn("Помилка завантаження процедур:", error));
       $("status").className = "status";
       $("status").textContent = "Завантажуємо каталог...";
 
@@ -1031,7 +1043,7 @@
 
         for (const file of dataFiles) {
           try {
-            const response = await fetch(file, { cache: "no-store" });
+            const response = await fetchWithTimeout(file);
             if (!response.ok) {
               if (file === "./admissions.csv") {
                 throw new Error("Основний файл admissions.csv не знайдено (HTTP " + response.status + ").");
@@ -1068,13 +1080,13 @@
         $("count").textContent = "0";
         $("status").className = "status error";
         $("status").textContent =
-          "Не вдалося завантажити каталог. " + error.message;
+          "Не вдалося завантажити каталог. " + (error && error.message ? error.message : "Перевір доступність CSV-файлів.");
 
         $("programGrid").innerHTML = `
           <div class="empty">
-            Перевір, чи файл <b>admissions.csv</b> лежить у корені репозиторію поруч з index.html.
-            <br>Для Німеччини додай також <b>germany-admissions.csv</b>.
-            <br><br>Після виправлення онови сторінку клавішами Ctrl + F5.
+            Не вдалося прочитати основний каталог. Переконайся, що <b>admissions.csv</b> і
+            <b>germany-admissions.csv</b> розміщені поруч із <b>index.html</b> у корені репозиторію.
+            <br>Якщо щойно оновила файли, зачекай 2–5 хвилин і натисни Ctrl + F5.
           </div>
         `;
       }
